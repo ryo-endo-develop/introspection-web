@@ -55,6 +55,7 @@
     "prettier": "^3.5.3",
     "sass": "^1.85.1",
     "secretlint": "^9.2.0",
+    "tailwind-variants": "^1.0.0",
     "tailwindcss": "^4.0.14",
     "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
