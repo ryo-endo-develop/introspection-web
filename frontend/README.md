@@ -11,4 +11,5 @@ npm run pre-check
 ```shell
 npm run lint
 npm run format
+npm run test
 ```

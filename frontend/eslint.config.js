@@ -29,11 +29,28 @@ export default [
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
       'redos/no-vulnerable': 'error',
-      '@typescript-eslint/no-explicit-any': 'warn'
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unsafe-assignment': 'warn' // 追加：anyの割り当てに関する警告を軽減
+    }
+  },
+  // Jestテストファイル用の設定を追加
+  {
+    files: ['**/*.test.ts', '**/*.test.tsx', '**/jest.setup.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.jest // Jestのグローバル変数を追加
+      }
     }
   },
   {
     // 無視設定
-    ignores: ['dist/**', 'node_modules/**', '*.config.*', '.secretlintrc.json', '.prettierrc.json', 'src/vite-env.d.ts']
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      '*.config.*',
+      '.secretlintrc.json',
+      '.prettierrc.json',
+      'src/vite-env.d.ts'
+    ]
   }
 ]
