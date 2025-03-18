@@ -5,6 +5,8 @@ import { useState } from 'react'
 import viteLogo from '/vite.svg'
 
 import reactLogo from './assets/react.svg'
+import { ActionButton } from './components/atoms/ActionButton'
+import { Card } from './components/atoms/Card'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -31,6 +33,11 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+      <ActionButton
+        label="Click me"
+        onClick={() => console.log('Button clicked')}
+      />
+      <Card>hoge</Card>
     </>
   )
 }
