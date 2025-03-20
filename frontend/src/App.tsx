@@ -1,44 +1,24 @@
-import './App.scss'
+// src/App.tsx
+import React from 'react'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 
-import { useState } from 'react'
+import { HomePage } from './pages/HomePage/HomePage'
 
-import viteLogo from '/vite.svg'
+// 他のページコンポーネントは後ほど実装
+const EntryPage = () => <div>エントリーページ（実装予定）</div>
+const AnalysisPage = () => <div>分析ページ（実装予定）</div>
+const InsightsPage = () => <div>インサイトページ（実装予定）</div>
 
-import reactLogo from './assets/react.svg'
-import { ActionButton } from './components/atoms/ActionButton'
-import { Card } from './components/atoms/Card'
-
-function App() {
-  const [count, setCount] = useState(0)
-
+const App: React.FC = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      <ActionButton
-        label="Click me"
-        onClick={() => console.log('Button clicked')}
-      />
-      <Card>hoge</Card>
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/entry/:id" element={<EntryPage />} />
+        <Route path="/analysis" element={<AnalysisPage />} />
+        <Route path="/insights" element={<InsightsPage />} />
+      </Routes>
+    </Router>
   )
 }
 
