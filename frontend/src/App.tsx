@@ -2,7 +2,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 
-import { HomePage } from './pages/HomePage/HomePage'
+import { HomePage } from './components/pages/HomePage/HomePage'
 
 // 他のページコンポーネントは後ほど実装
 const EntryPage = () => <div>エントリーページ（実装予定）</div>

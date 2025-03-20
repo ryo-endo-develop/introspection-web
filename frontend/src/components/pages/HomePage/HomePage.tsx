@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { HomeTemplate } from '../../components/templates/HomeTemplate/HomeTemplate'
+import { HomeTemplate } from '../../templates/HomeTemplate/HomeTemplate'
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate()
