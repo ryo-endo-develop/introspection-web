@@ -1,10 +1,10 @@
 import React from 'react'
 
-import { ActionButton } from '../atoms/ActionButton'
-import { CalendarSection } from '../organisms/CalendarSection/CalendarSection'
-import { HomeHeader } from '../organisms/HomeHeader/HomeHeader'
-import { RecentInsightsSection } from '../organisms/RecentInsightsSection/RecentInsightsSection'
-import { RecentSummarySection } from '../organisms/RecentSummarySection/RecentSummarySection'
+import { ActionButton } from '../../atoms/ActionButton'
+import { CalendarSection } from '../../organisms/CalendarSection/CalendarSection'
+import { HomeHeader } from '../../organisms/HomeHeader/HomeHeader'
+import { RecentInsightsSection } from '../../organisms/RecentInsightsSection/RecentInsightsSection'
+import { RecentSummarySection } from '../../organisms/RecentSummarySection/RecentSummarySection'
 
 interface HomeTemplateProps {
   userName: string
