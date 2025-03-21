@@ -1,21 +1,35 @@
-import React, { ReactNode } from 'react'
+import React from 'react'
 
-import { heading } from './Heading.styles'
+import { levels, variants } from './Heading.css'
+
+type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+type HeadingVariant = 'primary' | 'secondary' | 'accent'
 
 interface HeadingProps {
-  children: ReactNode
-  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'
+  level: HeadingLevel
+  variant?: HeadingVariant
+  children: React.ReactNode
   className?: string
+  id?: string
 }
 
 export const Heading: React.FC<HeadingProps> = ({
+  level,
+  variant = 'primary',
   children,
-  as: Component = 'h2',
-  size = 'lg',
-  className = ''
+  className = '',
+  id,
+  ...props
 }) => {
-  const headingStyles = heading({ size, className })
+  const Component = level
 
-  return <Component className={headingStyles}>{children}</Component>
+  return (
+    <Component
+      className={`${levels[level]} ${variants[variant]} ${className}`}
+      id={id}
+      {...props}
+    >
+      {children}
+    </Component>
+  )
 }

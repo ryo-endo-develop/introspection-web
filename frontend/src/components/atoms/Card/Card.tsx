@@ -1,21 +1,59 @@
-import React, { ReactNode } from 'react'
+import React from 'react'
 
-import { card } from './Card.styles'
+import { card, cardBody, cardFooter, cardHeader, cardPadding } from './Card.css'
+
+type CardPadding = 'none' | 'sm' | 'md' | 'lg'
 
 interface CardProps {
-  children: ReactNode
-  padding?: 'none' | 'sm' | 'md' | 'lg'
-  variant?: 'default' | 'outline' | 'filled'
+  children: React.ReactNode
+  padding?: CardPadding
   className?: string
 }
 
 export const Card: React.FC<CardProps> = ({
   children,
   padding = 'md',
-  variant = 'default',
   className = ''
 }) => {
-  const cardStyles = card({ padding, variant, className })
+  return (
+    <div className={`${card} ${cardPadding[padding]} ${className}`}>
+      {children}
+    </div>
+  )
+}
 
-  return <div className={cardStyles}>{children}</div>
+interface CardHeaderProps {
+  children: React.ReactNode
+  className?: string
+}
+
+export const CardHeader: React.FC<CardHeaderProps> = ({
+  children,
+  className = ''
+}) => {
+  return <div className={`${cardHeader} ${className}`}>{children}</div>
+}
+
+interface CardBodyProps {
+  children: React.ReactNode
+  className?: string
+}
+
+export const CardBody: React.FC<CardBodyProps> = ({
+  children,
+  className = ''
+}) => {
+  return <div className={`${cardBody} ${className}`}>{children}</div>
+}
+
+interface CardFooterProps {
+  children: React.ReactNode
+  className?: string
+}
+
+export const CardFooter: React.FC<CardFooterProps> = ({
+  children,
+  className = ''
+}) => {
+  return <div className={`${cardFooter} ${className}`}>{children}</div>
 }

@@ -1,19 +1,26 @@
-import React, { ReactNode } from 'react'
+import React from 'react'
 
-import { badge } from './Badge.styles'
+import { sizes, variants } from './Badge.css'
+
+type BadgeVariant = 'primary' | 'secondary' | 'tertiary' | 'outline'
+type BadgeSize = 'sm' | 'md'
 
 interface BadgeProps {
-  children: ReactNode
-  color?: 'gray' | 'red' | 'yellow' | 'green' | 'blue' | 'purple'
+  variant?: BadgeVariant
+  size?: BadgeSize
+  children: React.ReactNode
   className?: string
 }
 
 export const Badge: React.FC<BadgeProps> = ({
+  variant = 'primary',
+  size = 'sm',
   children,
-  color = 'gray',
   className = ''
 }) => {
-  const badgeStyles = badge({ color, className })
-
-  return <span className={badgeStyles}>{children}</span>
+  return (
+    <span className={`${variants[variant]} ${sizes[size]} ${className}`}>
+      {children}
+    </span>
+  )
 }

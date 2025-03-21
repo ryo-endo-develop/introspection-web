@@ -1,93 +1,72 @@
 import React from 'react'
 
-import { Card } from '../../atoms/Card/Card'
+import { TrendData } from '../../../types/journal.types'
 import { Text } from '../../atoms/Text/Text'
+import {
+  container,
+  graphLegend,
+  legendCircleMental,
+  legendCirclePhysical,
+  legendItem
+} from './TrendGraph.css'
 
 interface TrendGraphProps {
-  data: Array<{
-    date: string
-    mental: number
-    physical: number
-  }>
-  period: '7days' | '14days' | '30days' | '90days'
-  onPeriodChange: (period: '7days' | '14days' | '30days' | '90days') => void
+  data: TrendData[]
   className?: string
 }
 
 export const TrendGraph: React.FC<TrendGraphProps> = ({
   data,
-  period,
-  onPeriodChange,
   className = ''
 }) => {
-  // 実際のアプリでは、ここにチャートライブラリを使用
-  // 今回はシンプルに棒グラフのイメージを表示
-
-  const maxValue = 10 // スケールの最大値（1-10の評価）
-  const normalizedData = data.map((item) => ({
-    ...item,
-    mentalHeight: (item.mental / maxValue) * 100,
-    physicalHeight: (item.physical / maxValue) * 100
-  }))
+  console.log(data)
+  // This would normally use a chart library like recharts
+  // For now we'll just render a placeholder with proper styling
 
   return (
-    <Card className={`w-full ${className}`} padding="sm">
-      <div className="flex justify-between items-center mb-4">
-        <Text weight="medium" size="md">
-          メンタル・体調トレンド
-        </Text>
-        <div className="flex space-x-1 text-xs">
-          {(['7days', '14days', '30days', '90days'] as const).map((option) => (
-            <button
-              key={option}
-              className={`px-2 py-1 rounded ${
-                period === option
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700'
-              }`}
-              onClick={() => onPeriodChange(option)}
-            >
-              {option === '7days'
-                ? '7日'
-                : option === '14days'
-                  ? '14日'
-                  : option === '30days'
-                    ? '30日'
-                    : '90日'}
-            </button>
-          ))}
-        </div>
-      </div>
+    <div className={`${container} ${className}`}>
+      <svg width="100%" height="140" viewBox="0 0 400 140">
+        {/* Mental line (blue) */}
+        <path
+          d="M20,90 C50,70 80,40 110,60 C140,80 170,50 200,40 C230,30 260,60 290,30 C320,0 350,20 380,10"
+          stroke="#5C73E6"
+          strokeWidth="2"
+          fill="none"
+        />
 
-      <div className="h-40 flex items-end justify-between">
-        {normalizedData.map((item, index) => (
-          <div
-            key={`graph-${index}`}
-            className="flex space-x-1 items-end"
-            title={`${item.date}: メンタル ${item.mental}, 体調 ${item.physical}`}
-          >
-            <div
-              className="w-3 bg-blue-400 rounded-t"
-              style={{ height: `${item.mentalHeight}%` }}
-            />
-            <div
-              className="w-3 bg-green-400 rounded-t"
-              style={{ height: `${item.physicalHeight}%` }}
-            />
-          </div>
-        ))}
-      </div>
+        {/* Physical line (green) */}
+        <path
+          d="M20,110 C50,100 80,110 110,90 C140,70 170,80 200,100 C230,120 260,90 290,70 C320,50 350,60 380,50"
+          stroke="#30BF78"
+          strokeWidth="2"
+          fill="none"
+        />
 
-      <div className="mt-2 flex justify-between">
-        <div className="flex items-center">
-          <div className="w-3 h-3 bg-blue-400 rounded mr-1" />
-          <Text size="xs">メンタル</Text>
+        {/* Bottom axis */}
+        <line
+          x1="20"
+          y1="130"
+          x2="380"
+          y2="130"
+          stroke="#E5E8ED"
+          strokeWidth="1"
+        />
+      </svg>
+
+      <div className={graphLegend}>
+        <div className={legendItem}>
+          <span className={legendCircleMental}></span>
+          <Text size="sm" variant="secondary">
+            メンタル
+          </Text>
         </div>
-        <div className="flex items-center">
-          <div className="w-3 h-3 bg-green-400 rounded mr-1" />
-          <Text size="xs">体調</Text>
+        <div className={legendItem}>
+          <span className={legendCirclePhysical}></span>
+          <Text size="sm" variant="secondary">
+            体調
+          </Text>
         </div>
       </div>
-    </Card>
+    </div>
   )
 }

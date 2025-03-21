@@ -1,71 +1,76 @@
 import React from 'react'
 
-import { Badge } from '../../atoms/Badge/Badge'
-import { Card } from '../../atoms/Card/Card'
+import { JournalEntry, StatusRating } from '../../../types/journal.types'
 import { Text } from '../../atoms/Text/Text'
+import {
+  container,
+  date,
+  rating1,
+  rating2,
+  rating3,
+  rating4,
+  rating5,
+  statusIndicators
+} from './InsightCard.css'
 
 interface InsightCardProps {
-  title: string
-  entries: Array<{
-    id: string
-    content: string
-    date: string
-    category: 'success' | 'improvement' | 'next'
-  }>
+  entry: JournalEntry
   className?: string
 }
 
 export const InsightCard: React.FC<InsightCardProps> = ({
-  title,
-  entries,
+  entry,
   className = ''
 }) => {
-  const getCategoryColor = (
-    category: 'success' | 'improvement' | 'next'
-  ): 'green' | 'yellow' | 'blue' => {
-    switch (category) {
-      case 'success':
-        return 'green'
-      case 'improvement':
-        return 'yellow'
-      case 'next':
-        return 'blue'
+  const getRatingClassName = (rating: StatusRating) => {
+    switch (rating) {
+      case 1:
+        return rating1
+      case 2:
+        return rating2
+      case 3:
+        return rating3
+      case 4:
+        return rating4
+      case 5:
+        return rating5
     }
   }
 
-  const getCategoryText = (
-    category: 'success' | 'improvement' | 'next'
-  ): string => {
-    switch (category) {
-      case 'success':
-        return 'うまく行ったこと'
-      case 'improvement':
-        return '改善したいこと'
-      case 'next':
-        return '次に試したいこと'
-    }
+  // Convert date string to Date object and format
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    const month = date.getMonth() + 1
+    const day = date.getDate()
+    const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'][date.getDay()]
+
+    return `${month}月${day}日 (${dayOfWeek})`
   }
 
   return (
-    <Card className={`w-full ${className}`}>
-      <Text weight="bold" size="lg" className="mb-2">
-        {title}
-      </Text>
-      <div className="space-y-3">
-        {entries.map((entry) => (
-          <div key={entry.id} className="border-b pb-2 last:border-0">
-            <div className="flex justify-between items-center mb-1">
-              <Badge color={getCategoryColor(entry.category)}>
-                {getCategoryText(entry.category)}
-              </Badge>
-              <Text size="xs" className="text-gray-500">
-                {entry.date}
-              </Text>
-            </div>
-            <Text>{entry.content}</Text>
-          </div>
-        ))}
+    <div className={`${container} ${className}`}>
+      <div className={date}>
+        <Text size="sm" variant="secondary">
+          {formatDate(entry.date)}
+        </Text>
       </div>
-    </Card>
+
+      <div>
+        <Text size="md" weight="medium">
+          {entry.activities}
+        </Text>
+        <Text size="sm" variant="secondary">
+          {entry.improvements}
+        </Text>
+        <Text size="sm" variant="secondary">
+          {entry.nextSteps}
+        </Text>
+      </div>
+
+      <div className={statusIndicators}>
+        <div className={getRatingClassName(entry.status.physical)}></div>
+        <div className={getRatingClassName(entry.status.mental)}></div>
+      </div>
+    </div>
   )
 }
