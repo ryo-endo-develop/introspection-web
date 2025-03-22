@@ -1,5 +1,6 @@
 import { style, styleVariants } from '@vanilla-extract/css'
 
+import { mediaQueries } from '../../../styles/responsive.css'
 import { tokens } from '../../../styles/tokens.css'
 
 export const base = style({
@@ -7,12 +8,52 @@ export const base = style({
   fontFamily: tokens.fonts.body
 })
 
+// レスポンシブなテキストサイズ
 export const sizes = styleVariants({
-  xs: { fontSize: tokens.fontSizes.xs },
-  sm: { fontSize: tokens.fontSizes.sm },
-  md: { fontSize: tokens.fontSizes.md },
-  lg: { fontSize: tokens.fontSizes.lg },
-  xl: { fontSize: tokens.fontSizes.xl }
+  xs: {
+    fontSize: tokens.fontSizes.xs,
+    lineHeight: tokens.lineHeights.tight
+  },
+  sm: {
+    fontSize: tokens.fontSizes.xs,
+    lineHeight: tokens.lineHeights.tight,
+    '@media': {
+      [mediaQueries.md]: {
+        fontSize: tokens.fontSizes.sm,
+        lineHeight: tokens.lineHeights.normal
+      }
+    }
+  },
+  md: {
+    fontSize: tokens.fontSizes.sm,
+    lineHeight: tokens.lineHeights.normal,
+    '@media': {
+      [mediaQueries.md]: {
+        fontSize: tokens.fontSizes.md,
+        lineHeight: tokens.lineHeights.normal
+      }
+    }
+  },
+  lg: {
+    fontSize: tokens.fontSizes.md,
+    lineHeight: tokens.lineHeights.normal,
+    '@media': {
+      [mediaQueries.md]: {
+        fontSize: tokens.fontSizes.lg,
+        lineHeight: tokens.lineHeights.loose
+      }
+    }
+  },
+  xl: {
+    fontSize: tokens.fontSizes.lg,
+    lineHeight: tokens.lineHeights.loose,
+    '@media': {
+      [mediaQueries.md]: {
+        fontSize: tokens.fontSizes.xl,
+        lineHeight: tokens.lineHeights.loose
+      }
+    }
+  }
 })
 
 export const weights = styleVariants({
@@ -29,4 +70,27 @@ export const variants = styleVariants({
   success: { color: tokens.colors.success },
   warning: { color: tokens.colors.warning },
   error: { color: tokens.colors.error }
+})
+
+// テキストアライメント用のユーティリティクラス
+export const alignment = styleVariants({
+  left: { textAlign: 'left' },
+  center: { textAlign: 'center' },
+  right: { textAlign: 'right' },
+  // レスポンシブなテキストアライメント
+  responsiveCenter: {
+    textAlign: 'left',
+    '@media': {
+      [mediaQueries.md]: {
+        textAlign: 'center'
+      }
+    }
+  }
+})
+
+// テキストの切り捨て用のユーティリティ
+export const truncate = style({
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap'
 })

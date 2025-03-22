@@ -7,18 +7,33 @@ export const container = style({
   alignItems: 'center',
   justifyContent: 'space-between',
   width: '100%',
-  gap: tokens.space.xs
+  gap: tokens.space.xs,
+  flexWrap: 'wrap',
+  '@media': {
+    'screen and (min-width: 640px)': {
+      gap: tokens.space.xs,
+      flexWrap: 'nowrap'
+    }
+  }
 })
 
 export const dayItem = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  width: '40px',
-  height: '40px',
+  width: '32px',
+  height: '32px',
   borderRadius: tokens.radii.md,
   backgroundColor: tokens.colors.primary,
-  color: 'white'
+  color: 'white',
+  marginBottom: tokens.space.xs,
+  '@media': {
+    'screen and (min-width: 640px)': {
+      width: '40px',
+      height: '40px',
+      marginBottom: 0
+    }
+  }
 })
 
 export const activeDayItem = style([

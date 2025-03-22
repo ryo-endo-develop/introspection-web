@@ -4,7 +4,13 @@ import { tokens } from '../../../styles/tokens.css'
 
 export const pagination = style({
   display: 'flex',
-  justifyContent: 'flex-end',
-  padding: tokens.space.md,
-  cursor: 'pointer'
+  justifyContent: 'center',
+  padding: tokens.space.sm,
+  cursor: 'pointer',
+  '@media': {
+    'screen and (min-width: 768px)': {
+      justifyContent: 'flex-end',
+      padding: tokens.space.md
+    }
+  }
 })

@@ -4,21 +4,51 @@ import { tokens } from '../../../styles/tokens.css'
 
 export const container = style({
   display: 'grid',
-  gridTemplateColumns: 'auto 1fr auto',
-  gap: tokens.space.md,
-  padding: tokens.space.md,
-  borderBottom: `1px solid ${tokens.colors.border}`
+  gridTemplateColumns: '1fr',
+  gridTemplateAreas: `
+    "date"
+    "content"
+    "status"
+  `,
+  gap: tokens.space.sm,
+  padding: tokens.space.sm,
+  borderBottom: `1px solid ${tokens.colors.border}`,
+  '@media': {
+    'screen and (min-width: 640px)': {
+      gridTemplateColumns: 'auto 1fr auto',
+      gridTemplateAreas: `"date content status"`,
+      gap: tokens.space.md,
+      padding: tokens.space.md
+    }
+  }
 })
 
 export const date = style({
-  width: '90px',
-  textAlign: 'left'
+  gridArea: 'date',
+  width: 'auto',
+  textAlign: 'left',
+  '@media': {
+    'screen and (min-width: 640px)': {
+      width: '90px'
+    }
+  }
+})
+
+export const contentArea = style({
+  gridArea: 'content'
 })
 
 export const statusIndicators = style({
+  gridArea: 'status',
   display: 'flex',
   gap: tokens.space.xs,
-  alignItems: 'center'
+  alignItems: 'center',
+  justifyContent: 'flex-start',
+  '@media': {
+    'screen and (min-width: 640px)': {
+      justifyContent: 'center'
+    }
+  }
 })
 
 export const statusDot = style({
