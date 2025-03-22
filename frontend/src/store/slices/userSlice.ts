@@ -1,27 +1,40 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 interface UserState {
-  name: string
-  uncompletedDays: number
+  id: string | null
+  name: string | null
+  email: string | null
+  isAuthenticated: boolean
 }
 
 const initialState: UserState = {
-  name: 'ユーザー',
-  uncompletedDays: 0
+  id: null,
+  name: null,
+  email: null,
+  isAuthenticated: false
 }
 
 export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setUserName: (state, action: PayloadAction<string>) => {
-      state.name = action.payload
+    setUser: (
+      state,
+      action: PayloadAction<Omit<UserState, 'isAuthenticated'>>
+    ) => {
+      state.id = action.payload.id
+      state.name = action.payload.name
+      state.email = action.payload.email
+      state.isAuthenticated = true
     },
-    setUncompletedDays: (state, action: PayloadAction<number>) => {
-      state.uncompletedDays = action.payload
+    clearUser: (state) => {
+      state.id = null
+      state.name = null
+      state.email = null
+      state.isAuthenticated = false
     }
   }
 })
 
-export const { setUserName, setUncompletedDays } = userSlice.actions
+export const { setUser, clearUser } = userSlice.actions
 export default userSlice.reducer

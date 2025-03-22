@@ -1,19 +1,17 @@
 export type StatusRating = 1 | 2 | 3 | 4 | 5
 
-export interface DailyStatus {
+export interface JournalStatus {
   physical: StatusRating
   mental: StatusRating
 }
 
 export interface JournalEntry {
+  id: string
   date: string
   activities: string
   improvements: string
   nextSteps: string
-  status: {
-    physical: StatusRating
-    mental: StatusRating
-  }
+  status: JournalStatus
 }
 
 export interface TrendData {
@@ -22,4 +20,7 @@ export interface TrendData {
   mental: number
 }
 
-export type JournalPeriod = 'day' | 'week' | 'month' | 'year'
+export interface DailyActivity {
+  day: string
+  isActive: boolean
+}

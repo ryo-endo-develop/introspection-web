@@ -1,21 +1,12 @@
-// src/App.tsx
 import React from 'react'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { Dashboard } from './components/pages/Dashboard/Dashboard'
+import './App.scss'
 
-// 他のページコンポーネントは後ほど実装
-const EntryPage = () => <div>エントリーページ（実装予定）</div>
-const AnalysisPage = () => <div>分析ページ（実装予定）</div>
-const InsightsPage = () => <div>インサイトページ（実装予定）</div>
-
-const App: React.FC = () => {
+function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/entry/:id" element={<EntryPage />} />
-        <Route path="/analysis" element={<AnalysisPage />} />
-        <Route path="/insights" element={<InsightsPage />} />
-      </Routes>
-    </Router>
+    <div className="app">
+      <Dashboard />
+    </div>
   )
 }
 

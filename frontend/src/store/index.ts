@@ -1,5 +1,4 @@
 import { configureStore } from '@reduxjs/toolkit'
-
 import entriesReducer from './slices/entriesSlice'
 import userReducer from './slices/userSlice'
 
