@@ -9,7 +9,8 @@ import {
   settingsItem,
   sidebarContainer,
   sidebarContent,
-  sidebarTitle} from './Sidebar.css'
+  sidebarTitle
+} from './Sidebar.css'
 
 interface SidebarProps {
   className?: string

@@ -5,8 +5,14 @@ import {
   LineChart,
   ResponsiveContainer,
   Tooltip,
+  TooltipProps,
   XAxis,
-  YAxis} from 'recharts'
+  YAxis
+} from 'recharts'
+import {
+  NameType,
+  ValueType
+} from 'recharts/types/component/DefaultTooltipContent'
 
 import { TrendData } from '../../../types/journal.types'
 import { Text } from '../../atoms/Text/Text'
@@ -84,7 +90,11 @@ const useResponsiveDataPoints = (data: TrendData[]) => {
 }
 
 // カスタムツールチップコンポーネント
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  label
+}: TooltipProps<ValueType, NameType>) => {
   if (active && payload && payload.length) {
     return (
       <div

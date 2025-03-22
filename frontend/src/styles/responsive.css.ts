@@ -1,4 +1,4 @@
-import { createVar, style } from '@vanilla-extract/css'
+import { style } from '@vanilla-extract/css'
 
 // ブレークポイントを定義
 export const breakpoints = {
@@ -24,6 +24,7 @@ export const responsiveStyle = (
   desktop?: string | number,
   largeDesktop?: string | number
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const styles: Record<string, any> = {
     [property]: mobile
   }

@@ -4,7 +4,8 @@ import {
   DailyActivity,
   JournalEntry,
   JournalStatus,
-  TrendData} from '../../types/journal.types'
+  TrendData
+} from '../../types/journal.types'
 
 interface EntriesState {
   entries: JournalEntry[]
