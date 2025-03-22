@@ -1,8 +1,9 @@
 import React from 'react'
+
+import { TrendData } from '../../../types/journal.types'
 import { Card, CardBody, CardHeader } from '../../atoms/Card/Card'
 import { Heading } from '../../atoms/Heading/Heading'
 import { TrendGraph } from '../../molecules/TrendGraph/TrendGraph'
-import { TrendData } from '../../../types/journal.types'
 
 interface TrendCardProps {
   title: string

@@ -1,15 +1,15 @@
 import React from 'react'
+
 import { Text } from '../../atoms/Text/Text'
 import {
-  sidebarContainer,
-  navigationItem,
   activeNavigationItem,
   navigationIcon,
+  navigationItem,
   navigationText,
-  sidebarTitle,
+  settingsItem,
+  sidebarContainer,
   sidebarContent,
-  settingsItem
-} from './Sidebar.css'
+  sidebarTitle} from './Sidebar.css'
 
 interface SidebarProps {
   className?: string

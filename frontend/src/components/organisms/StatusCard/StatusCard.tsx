@@ -1,4 +1,5 @@
 import React from 'react'
+
 import { Card, CardBody } from '../../atoms/Card/Card'
 import { StatusIndicator } from '../../molecules/StatusIndicator/StatusIndicator'
 import { container } from './StatusCard.css'

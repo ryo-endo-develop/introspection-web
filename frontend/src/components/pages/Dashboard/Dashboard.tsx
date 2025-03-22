@@ -1,24 +1,24 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
+
+import { RootState } from '../../../store'
+import { Button } from '../../atoms/Button/Button'
 import { Heading } from '../../atoms/Heading/Heading'
 import { Text } from '../../atoms/Text/Text'
-import { Button } from '../../atoms/Button/Button'
+import { JournalEntriesList } from '../../organisms/JournalEntriesList/JournalEntriesList'
+import { Sidebar } from '../../organisms/Sidebar/Sidebar'
 import { StatusCard } from '../../organisms/StatusCard/StatusCard'
 import { TrendCard } from '../../organisms/TrendCard/TrendCard'
 import { WeeklyActivityCard } from '../../organisms/WeeklyActivityCard/WeeklyActivityCard'
-import { JournalEntriesList } from '../../organisms/JournalEntriesList/JournalEntriesList'
-import { Sidebar } from '../../organisms/Sidebar/Sidebar'
 import {
+  actionButton,
   dashboardContainer,
+  entriesSection,
   header,
-  titleSection,
-  dateSection,
   mainContent,
   statusSection,
-  entriesSection,
-  actionButton
+  titleSection
 } from './Dashboard.css'
-import { useSelector } from 'react-redux'
-import { RootState } from '../../../store'
 
 export const Dashboard: React.FC = () => {
   // This would normally come from the Redux store

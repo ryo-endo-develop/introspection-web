@@ -1,8 +1,9 @@
 import React from 'react'
+
+import { DailyActivity } from '../../../types/journal.types'
 import { Card, CardBody, CardHeader } from '../../atoms/Card/Card'
 import { Heading } from '../../atoms/Heading/Heading'
 import { WeekIndicator } from '../../molecules/WeekIndicator/WeekIndicator'
-import { DailyActivity } from '../../../types/journal.types'
 
 interface WeeklyActivityCardProps {
   title: string

@@ -1,10 +1,11 @@
 import React from 'react'
+
+import { JournalEntry } from '../../../types/journal.types'
 import { Card, CardBody, CardHeader } from '../../atoms/Card/Card'
 import { Heading } from '../../atoms/Heading/Heading'
-import { InsightCard } from '../../molecules/InsightCard/InsightCard'
-import { JournalEntry } from '../../../types/journal.types'
-import { pagination } from './JournalEntiesList.css'
 import { Text } from '../../atoms/Text/Text'
+import { InsightCard } from '../../molecules/InsightCard/InsightCard'
+import { pagination } from './JournalEntiesList.css'
 
 interface JournalEntriesListProps {
   title: string
@@ -23,6 +24,7 @@ export const JournalEntriesList: React.FC<JournalEntriesListProps> = ({
   pageSize,
   className = ''
 }) => {
+  console.log(currentPage)
   return (
     <Card className={`${className}`}>
       <CardHeader>

@@ -1,7 +1,8 @@
 import React from 'react'
-import { container, activeDayItem, inactiveDayItem } from './WeekIndicator.css'
-import { Text } from '../../atoms/Text/Text'
+
 import { DailyActivity } from '../../../types/journal.types'
+import { Text } from '../../atoms/Text/Text'
+import { activeDayItem, container, inactiveDayItem } from './WeekIndicator.css'
 
 interface WeekIndicatorProps {
   days: DailyActivity[]
