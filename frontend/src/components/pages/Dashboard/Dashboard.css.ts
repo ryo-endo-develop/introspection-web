@@ -42,6 +42,31 @@ export const titleSection = style({
   }
 })
 
+export const actionsSection = style({
+  display: 'flex',
+  gap: tokens.space.sm,
+  flexDirection: 'column',
+  width: '100%',
+  '@media': {
+    'screen and (min-width: 480px)': {
+      flexDirection: 'row'
+    },
+    'screen and (min-width: 768px)': {
+      width: 'auto'
+    }
+  }
+})
+
+export const actionButton = style({
+  width: '100%',
+  '@media': {
+    'screen and (min-width: 480px)': {
+      width: 'auto',
+      minWidth: '120px'
+    }
+  }
+})
+
 export const dateSection = style({
   display: 'flex',
   alignItems: 'center'
@@ -79,16 +104,4 @@ export const statusSection = style({
 
 export const entriesSection = style({
   width: '100%'
-})
-
-export const actionButton = style({
-  marginTop: tokens.space.md,
-  maxWidth: '100%',
-  alignSelf: 'center',
-  '@media': {
-    'screen and (min-width: 768px)': {
-      marginTop: tokens.space.lg,
-      maxWidth: '400px'
-    }
-  }
 })

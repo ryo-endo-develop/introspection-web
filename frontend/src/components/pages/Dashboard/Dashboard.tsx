@@ -10,6 +10,8 @@ import { JournalEntriesList } from '../../organisms/JournalEntriesList/JournalEn
 import { Sidebar } from '../../organisms/Sidebar/Sidebar'
 import { TrendCard } from '../../organisms/TrendCard/TrendCard'
 import {
+  actionButton,
+  actionsSection,
   dashboardContainer,
   entriesSection,
   header,
@@ -52,12 +54,14 @@ export const Dashboard: React.FC = () => {
             <Heading level="h1">ホームダッシュボード</Heading>
             <Text variant="secondary">{formatDate()}</Text>
           </div>
-          <Button variant="primary" size="md">
-            目標
-          </Button>
-          <Button variant="primary" size="md">
-            振り返り
-          </Button>
+          <div className={actionsSection}>
+            <Button variant="primary" size="md" className={actionButton}>
+              目標入力
+            </Button>
+            <Button variant="primary" size="md" className={actionButton}>
+              振り返り入力
+            </Button>
+          </div>
         </header>
 
         <div className={statusSection}>

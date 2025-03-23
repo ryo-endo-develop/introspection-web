@@ -1,9 +1,9 @@
 import React from 'react'
 import {
-  FiTarget,
   FiHome,
   FiPieChart,
   FiSettings,
+  FiTarget,
   FiUser
 } from 'react-icons/fi'
 
