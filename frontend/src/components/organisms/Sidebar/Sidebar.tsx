@@ -1,10 +1,10 @@
 import React from 'react'
 import {
+  FiCalendar,
   FiHome,
   FiPieChart,
-  FiCalendar,
-  FiUser,
-  FiSettings
+  FiSettings,
+  FiUser
 } from 'react-icons/fi'
 
 import { Text } from '../../atoms/Text/Text'
