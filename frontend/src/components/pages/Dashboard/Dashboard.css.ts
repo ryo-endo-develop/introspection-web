@@ -69,10 +69,10 @@ export const statusSection = style({
   gap: tokens.space.md,
   '@media': {
     'screen and (min-width: 640px)': {
-      gridTemplateColumns: 'repeat(2, 1fr)'
+      gridTemplateColumns: '1fr'
     },
     'screen and (min-width: 1024px)': {
-      gridTemplateColumns: 'repeat(3, 1fr)'
+      gridTemplateColumns: 'repeat(2, 1fr)'
     }
   }
 })
