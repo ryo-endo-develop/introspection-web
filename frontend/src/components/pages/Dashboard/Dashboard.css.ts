@@ -54,6 +54,7 @@ export const mainContent = style({
   flexDirection: 'column',
   gap: tokens.space.md,
   overflowY: 'auto',
+  minHeight: '100vh', // メインコンテンツも最小高さを画面いっぱいに
   '@media': {
     'screen and (min-width: 768px)': {
       padding: tokens.space.xl,
