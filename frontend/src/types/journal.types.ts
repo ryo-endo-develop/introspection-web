@@ -1,6 +1,8 @@
+// frontend/src/types/journal.types.ts
+
 export type StatusRating = 1 | 2 | 3 | 4 | 5
 
-export interface JournalStatus {
+export interface Status {
   physical: StatusRating
   mental: StatusRating
 }
@@ -8,19 +10,27 @@ export interface JournalStatus {
 export interface JournalEntry {
   id: string
   date: string
+  title: string
   activities: string
   improvements: string
   nextSteps: string
-  status: JournalStatus
+  status: Status
 }
 
 export interface TrendData {
   date: string
-  physical: number
   mental: number
+  physical: number
 }
 
 export interface DailyActivity {
   day: string
   isActive: boolean
+}
+
+export interface GoalProgress {
+  label: string
+  value: number
+  maxValue: number
+  color: string
 }

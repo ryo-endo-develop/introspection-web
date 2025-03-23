@@ -4,6 +4,7 @@ import { JournalEntry, StatusRating } from '../../../types/journal.types'
 import { Text } from '../../atoms/Text/Text'
 import {
   container,
+  contentArea,
   date,
   rating1,
   rating2,
@@ -55,15 +56,18 @@ export const InsightCard: React.FC<InsightCardProps> = ({
         </Text>
       </div>
 
-      <div>
+      <div className={contentArea}>
         <Text size="md" weight="medium">
-          {entry.activities}
+          {entry.title}
         </Text>
         <Text size="sm" variant="secondary">
-          {entry.improvements}
+          うまく行ったこと: {entry.activities}
         </Text>
         <Text size="sm" variant="secondary">
-          {entry.nextSteps}
+          改善したいこと: {entry.improvements}
+        </Text>
+        <Text size="sm" variant="secondary">
+          次に試したいこと: {entry.nextSteps}
         </Text>
       </div>
 

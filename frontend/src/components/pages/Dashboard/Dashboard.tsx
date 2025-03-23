@@ -5,13 +5,11 @@ import { RootState } from '../../../store'
 import { Button } from '../../atoms/Button/Button'
 import { Heading } from '../../atoms/Heading/Heading'
 import { Text } from '../../atoms/Text/Text'
+import { GoalProgressCard } from '../../organisms/GoalProgressCard/GoalProgressCard'
 import { JournalEntriesList } from '../../organisms/JournalEntriesList/JournalEntriesList'
 import { Sidebar } from '../../organisms/Sidebar/Sidebar'
-import { StatusCard } from '../../organisms/StatusCard/StatusCard'
 import { TrendCard } from '../../organisms/TrendCard/TrendCard'
-import { WeeklyActivityCard } from '../../organisms/WeeklyActivityCard/WeeklyActivityCard'
 import {
-  actionButton,
   dashboardContainer,
   entriesSection,
   header,
@@ -26,12 +24,13 @@ export const Dashboard: React.FC = () => {
     (state: RootState) => state.entries.entries
   )
   const trendData = useSelector((state: RootState) => state.entries.trendData)
-  const weekActivity = useSelector(
-    (state: RootState) => state.entries.weekActivity
-  )
-  const currentStatus = useSelector(
-    (state: RootState) => state.entries.currentStatus
-  )
+
+  const goalProgressItems = [
+    { label: '朝の運動', value: 70, maxValue: 100, color: '#4CAF50' },
+    { label: '読書習慣', value: 50, maxValue: 100, color: '#5C73E6' },
+    { label: '瞑想', value: 25, maxValue: 100, color: '#FFD54F' },
+    { label: 'タスク管理の改善', value: 40, maxValue: 100, color: '#FF7878' }
+  ]
 
   const formatDate = () => {
     const now = new Date()
@@ -53,14 +52,13 @@ export const Dashboard: React.FC = () => {
             <Heading level="h1">ホームダッシュボード</Heading>
             <Text variant="secondary">{formatDate()}</Text>
           </div>
+          <Button variant="primary" size="lg">
+            今日の振り返りを入力する
+          </Button>
         </header>
 
         <div className={statusSection}>
-          <WeeklyActivityCard title="今週の状態" days={weekActivity} />
-          <StatusCard
-            physicalValue={currentStatus.physical}
-            mentalValue={currentStatus.mental}
-          />
+          <GoalProgressCard title="目標進捗" goals={goalProgressItems} />
           <TrendCard title="月間トレンド" data={trendData} />
         </div>
 
@@ -72,12 +70,6 @@ export const Dashboard: React.FC = () => {
             totalEntries={28}
             pageSize={5}
           />
-        </div>
-
-        <div className={actionButton}>
-          <Button variant="primary" size="lg" fullWidth>
-            振り返りを記録する
-          </Button>
         </div>
       </div>
     </div>
