@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  FiCalendar,
+  FiTarget,
   FiHome,
   FiPieChart,
   FiSettings,
@@ -50,10 +50,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
         </div>
         <div className={navigationItem}>
           <div className={navigationIcon}>
-            <FiCalendar size={18} />
+            <FiTarget size={18} />
           </div>
           <div className={navigationText}>
-            <Text>カレンダー</Text>
+            <Text>目標管理</Text>
           </div>
         </div>
         <div className={navigationItem}>

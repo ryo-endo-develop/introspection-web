@@ -52,8 +52,11 @@ export const Dashboard: React.FC = () => {
             <Heading level="h1">ホームダッシュボード</Heading>
             <Text variant="secondary">{formatDate()}</Text>
           </div>
-          <Button variant="primary" size="lg">
-            今日の振り返りを入力する
+          <Button variant="primary" size="md">
+            目標
+          </Button>
+          <Button variant="primary" size="md">
+            振り返り
           </Button>
         </header>
 
