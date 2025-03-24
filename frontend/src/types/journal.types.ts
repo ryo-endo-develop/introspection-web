@@ -1,5 +1,3 @@
-// frontend/src/types/journal.types.ts
-
 export type StatusRating = 1 | 2 | 3 | 4 | 5
 
 export interface Status {
@@ -7,7 +5,7 @@ export interface Status {
   mental: StatusRating
 }
 
-export interface JournalEntry {
+export interface IntrospectionEntry {
   id: string
   date: string
   title: string

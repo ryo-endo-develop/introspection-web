@@ -1,11 +1,9 @@
-// frontend/src/store/slices/entriesSlice.ts
-
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { JournalEntry, TrendData } from '../../types/journal.types'
+import { IntrospectionEntry, TrendData } from '../../types/journal.types'
 
 interface EntriesState {
-  entries: JournalEntry[]
+  entries: IntrospectionEntry[]
   trendData: TrendData[]
   currentStatus: {
     physical: number
@@ -58,10 +56,10 @@ const entriesSlice = createSlice({
   name: 'entries',
   initialState,
   reducers: {
-    addEntry(state, action: PayloadAction<JournalEntry>) {
+    addEntry(state, action: PayloadAction<IntrospectionEntry>) {
       state.entries.unshift(action.payload)
     },
-    updateEntry(state, action: PayloadAction<JournalEntry>) {
+    updateEntry(state, action: PayloadAction<IntrospectionEntry>) {
       const index = state.entries.findIndex((e) => e.id === action.payload.id)
       if (index !== -1) {
         state.entries[index] = action.payload

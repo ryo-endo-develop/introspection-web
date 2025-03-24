@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { JournalEntry } from '../../../types/journal.types'
+import { IntrospectionEntry } from '../../../types/journal.types'
 import { Card, CardBody, CardHeader } from '../../atoms/Card/Card'
 import { Heading } from '../../atoms/Heading/Heading'
 import { Text } from '../../atoms/Text/Text'
@@ -9,7 +9,7 @@ import { pagination } from './IntrospectionEntiesList.css'
 
 interface IntrospectionEntiesListProps {
   title: string
-  entries: JournalEntry[]
+  entries: IntrospectionEntry[]
   currentPage: number
   totalEntries: number
   pageSize: number
