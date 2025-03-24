@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { RootState } from '../../../store'
@@ -6,6 +6,7 @@ import { Button } from '../../atoms/Button/Button'
 import { Heading } from '../../atoms/Heading/Heading'
 import { Text } from '../../atoms/Text/Text'
 import { GoalProgressCard } from '../../organisms/GoalProgressCard/GoalProgressCard'
+import { IntrospectionModal } from '../../organisms/IntrospectionModal/IntrospectionModal'
 import { JournalEntriesList } from '../../organisms/JournalEntriesList/JournalEntriesList'
 import { Sidebar } from '../../organisms/Sidebar/Sidebar'
 import { TrendCard } from '../../organisms/TrendCard/TrendCard'
@@ -21,6 +22,9 @@ import {
 } from './Dashboard.css'
 
 export const Dashboard: React.FC = () => {
+  const [isIntrospectionModalOpen, setIsIntrospectionModalOpen] =
+    useState(false)
+
   // This would normally come from the Redux store
   const journalEntries = useSelector(
     (state: RootState) => state.entries.entries
@@ -58,7 +62,12 @@ export const Dashboard: React.FC = () => {
             <Button variant="primary" size="md" className={actionButton}>
               目標入力
             </Button>
-            <Button variant="primary" size="md" className={actionButton}>
+            <Button
+              variant="primary"
+              size="md"
+              className={actionButton}
+              onClick={() => setIsIntrospectionModalOpen(true)}
+            >
               振り返り入力
             </Button>
           </div>
@@ -79,6 +88,11 @@ export const Dashboard: React.FC = () => {
           />
         </div>
       </div>
+
+      <IntrospectionModal
+        isOpen={isIntrospectionModalOpen}
+        onClose={() => setIsIntrospectionModalOpen(false)}
+      />
     </div>
   )
 }
