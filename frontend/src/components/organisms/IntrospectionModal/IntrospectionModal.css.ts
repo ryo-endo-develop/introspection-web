@@ -20,22 +20,3 @@ export const modalTitle = style({
   fontWeight: tokens.fontWeights.bold,
   color: tokens.colors.textPrimary
 })
-
-export const closeButton = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '32px',
-  height: '32px',
-  borderRadius: '50%',
-  border: 'none',
-  background: 'transparent',
-  color: tokens.colors.textTertiary,
-  cursor: 'pointer',
-  transition: 'background-color 0.2s, color 0.2s',
-
-  ':hover': {
-    backgroundColor: tokens.colors.background,
-    color: tokens.colors.textPrimary
-  }
-})

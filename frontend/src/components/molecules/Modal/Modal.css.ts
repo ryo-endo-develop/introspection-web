@@ -22,7 +22,7 @@ export const modalContainer = style({
   borderRadius: tokens.radii.md,
   boxShadow: tokens.shadows.lg,
   width: '100%',
-  maxWidth: '600px',
+  maxWidth: '650px',
   maxHeight: '90vh',
   display: 'flex',
   flexDirection: 'column',
