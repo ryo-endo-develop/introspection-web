@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { IntrospectionEntry, TrendData } from '../../types/journal.types'
+import { IntrospectionEntry, TrendData } from '../../types/introspection.types'
 
 interface EntriesState {
   entries: IntrospectionEntry[]

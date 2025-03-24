@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { TrendData } from '../../../types/journal.types'
+import { TrendData } from '../../../types/introspection.types'
 import { Card, CardBody, CardHeader } from '../../atoms/Card/Card'
 import { Heading } from '../../atoms/Heading/Heading'
 import { TrendGraph } from '../../molecules/TrendGraph/TrendGraph'

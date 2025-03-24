@@ -1,6 +1,9 @@
 import React from 'react'
 
-import { JournalEntry, StatusRating } from '../../../types/journal.types'
+import {
+  IntrospectionEntry,
+  StatusRating
+} from '../../../types/introspection.types'
 import { Text } from '../../atoms/Text/Text'
 import {
   container,
@@ -15,7 +18,7 @@ import {
 } from './IntrospectionCard.css'
 
 interface IntrospectionCardProps {
-  entry: JournalEntry
+  entry: IntrospectionEntry
   className?: string
 }
 

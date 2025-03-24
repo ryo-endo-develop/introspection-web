@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { IntrospectionEntry } from '../../../types/journal.types'
+import { IntrospectionEntry } from '../../../types/introspection.types'
 import { Card, CardBody, CardHeader } from '../../atoms/Card/Card'
 import { Heading } from '../../atoms/Heading/Heading'
 import { Text } from '../../atoms/Text/Text'

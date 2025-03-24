@@ -14,7 +14,7 @@ import {
   ValueType
 } from 'recharts/types/component/DefaultTooltipContent'
 
-import { TrendData } from '../../../types/journal.types'
+import { TrendData } from '../../../types/introspection.types'
 import { Text } from '../../atoms/Text/Text'
 import {
   container,

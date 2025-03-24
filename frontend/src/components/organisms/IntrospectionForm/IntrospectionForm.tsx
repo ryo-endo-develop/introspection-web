@@ -2,7 +2,10 @@ import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { addEntry } from '../../../store/slices/entriesSlice'
-import { JournalEntry, StatusRating } from '../../../types/journal.types'
+import {
+  IntrospectionEntry,
+  StatusRating
+} from '../../../types/introspection.types'
 import { Button } from '../../atoms/Button/Button'
 import { TextArea } from '../../atoms/TextArea/TextArea'
 import {
@@ -13,7 +16,8 @@ import {
   ratingButtonSelected,
   ratingContainer,
   ratingLabel,
-  ratingSection} from './IntrospectionForm.css'
+  ratingSection
+} from './IntrospectionForm.css'
 
 // フォームの初期値
 const initialFormState = {
@@ -61,7 +65,7 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
 
     const currentDate = new Date().toISOString().split('T')[0]
 
-    const newEntry: JournalEntry = {
+    const newEntry: IntrospectionEntry = {
       id: 'FIX ME',
       date: currentDate,
       title: formData.title || `${currentDate}の振り返り`,
