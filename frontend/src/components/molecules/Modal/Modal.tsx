@@ -1,19 +1,13 @@
-import React from 'react'
+import React, { ReactNode, useEffect } from 'react'
 
-import {
-  closeButton,
-  modalContent,
-  modalHeader,
-  modalOverlay,
-  modalTitle
-} from './Modal.css'
+import { backdrop, modalContainer, modalContent } from './Modal.css'
 
 interface ModalProps {
   isOpen: boolean
   onClose: () => void
-  title: string
-  children: React.ReactNode
-  className?: string
+  title?: string
+  children: ReactNode
+  customHeader?: ReactNode
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -21,29 +15,44 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   title,
   children,
-  className = ''
+  customHeader
 }) => {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [isOpen, onClose])
+
   if (!isOpen) return null
 
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      onClose()
-    }
-  }
-
   return (
-    <div
-      className={`${modalOverlay} ${className}`}
-      onClick={handleOverlayClick}
-    >
-      <div className={modalContent}>
-        <div className={modalHeader}>
-          <h2 className={modalTitle}>{title}</h2>
-          <button className={closeButton} onClick={onClose} aria-label="閉じる">
-            ×
-          </button>
-        </div>
-        <div>{children}</div>
+    <div className={backdrop} onClick={onClose}>
+      <div
+        className={modalContainer}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? 'modal-title' : undefined}
+      >
+        {customHeader || (title && <h2 id="modal-title">{title}</h2>)}
+        <div className={modalContent}>{children}</div>
       </div>
     </div>
   )

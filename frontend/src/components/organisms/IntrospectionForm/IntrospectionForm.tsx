@@ -11,6 +11,7 @@ import { TextArea } from '../../atoms/TextArea/TextArea'
 import {
   buttonContainer,
   formContainer,
+  formTitle,
   ratingButton,
   ratingButtonsContainer,
   ratingButtonSelected,
@@ -89,6 +90,8 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
         type="button"
         className={`${ratingButton} ${value === currentValue ? ratingButtonSelected : ''}`}
         onClick={() => handleRatingChange(type, value as StatusRating)}
+        aria-label={`評価 ${value}`}
+        aria-pressed={value === currentValue}
       >
         {value}
       </button>
@@ -97,14 +100,16 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className={`${formContainer} ${className}`}>
-      <TextArea
-        label="今日のタイトル"
-        name="title"
-        value={formData.title}
-        onChange={handleInputChange}
-        placeholder="今日の振り返りのタイトルを入力してください"
-        rows={1}
-      />
+      <div className={formTitle}>
+        <TextArea
+          label="今日のタイトル"
+          name="title"
+          value={formData.title}
+          onChange={handleInputChange}
+          placeholder="今日の振り返りのタイトルを入力してください"
+          rows={1}
+        />
+      </div>
 
       <div className={ratingSection}>
         <div className={ratingContainer}>
