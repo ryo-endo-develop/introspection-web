@@ -7,7 +7,7 @@ import { Heading } from '../../atoms/Heading/Heading'
 import { Text } from '../../atoms/Text/Text'
 import { GoalProgressCard } from '../../organisms/GoalProgressCard/GoalProgressCard'
 import { IntrospectionModal } from '../../organisms/IntrospectionModal/IntrospectionModal'
-import { JournalEntriesList } from '../../organisms/JournalEntriesList/JournalEntriesList'
+import { IntrospectionEntiesList } from '../../organisms/IntrospectionEntiesList/IntrospectionEntiesList'
 import { Sidebar } from '../../organisms/Sidebar/Sidebar'
 import { TrendCard } from '../../organisms/TrendCard/TrendCard'
 import {
@@ -79,7 +79,7 @@ export const Dashboard: React.FC = () => {
         </div>
 
         <div className={entriesSection}>
-          <JournalEntriesList
+          <IntrospectionEntiesList
             title="最近の振り返り"
             entries={journalEntries}
             currentPage={1}

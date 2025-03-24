@@ -12,14 +12,14 @@ import {
   rating4,
   rating5,
   statusIndicators
-} from './InsightCard.css'
+} from './IntrospectionCard.css'
 
-interface InsightCardProps {
+interface IntrospectionCardProps {
   entry: JournalEntry
   className?: string
 }
 
-export const InsightCard: React.FC<InsightCardProps> = ({
+export const IntrospectionCard: React.FC<IntrospectionCardProps> = ({
   entry,
   className = ''
 }) => {

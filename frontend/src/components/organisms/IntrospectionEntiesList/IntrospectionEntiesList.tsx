@@ -4,10 +4,10 @@ import { JournalEntry } from '../../../types/journal.types'
 import { Card, CardBody, CardHeader } from '../../atoms/Card/Card'
 import { Heading } from '../../atoms/Heading/Heading'
 import { Text } from '../../atoms/Text/Text'
-import { InsightCard } from '../../molecules/InsightCard/InsightCard'
-import { pagination } from './JournalEntiesList.css'
+import { IntrospectionCard } from '../../molecules/IntrospectionCard/IntrospectionCard'
+import { pagination } from './IntrospectionEntiesList.css'
 
-interface JournalEntriesListProps {
+interface IntrospectionEntiesListProps {
   title: string
   entries: JournalEntry[]
   currentPage: number
@@ -16,7 +16,9 @@ interface JournalEntriesListProps {
   className?: string
 }
 
-export const JournalEntriesList: React.FC<JournalEntriesListProps> = ({
+export const IntrospectionEntiesList: React.FC<
+  IntrospectionEntiesListProps
+> = ({
   title,
   entries,
   currentPage,
@@ -33,7 +35,7 @@ export const JournalEntriesList: React.FC<JournalEntriesListProps> = ({
       <CardBody>
         <div>
           {entries.map((entry) => (
-            <InsightCard key={entry.id} entry={entry} />
+            <IntrospectionCard key={entry.id} entry={entry} />
           ))}
         </div>
         <div className={pagination}>
