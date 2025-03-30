@@ -6,15 +6,18 @@ import { tokens } from '../../../styles/tokens.css'
 export const formContainer = style({
   display: 'flex',
   flexDirection: 'column',
-  gap: tokens.space.lg,
-  padding: `0 ${tokens.space.md} ${tokens.space.md}`,
+  gap: tokens.space.xl,
+  padding: `0 ${tokens.space.md} ${tokens.space.xl}`,
   maxWidth: '800px',
-  margin: '0 auto'
+  margin: '0 auto',
+  color: tokens.colors.textPrimary
 })
 
-export const formTitle = style({
-  marginTop: tokens.space.sm,
-  marginBottom: tokens.space.sm
+export const sectionTitle = style({
+  fontSize: tokens.fontSizes.md,
+  fontWeight: tokens.fontWeights.bold,
+  color: tokens.colors.textPrimary,
+  margin: 0
 })
 
 export const ratingSection = style({
@@ -29,15 +32,20 @@ export const ratingSection = style({
 })
 
 export const ratingContainer = style({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: tokens.space.md
+  padding: 0 // Cardのデフォルトパディングをオーバーライド
 })
 
 export const ratingLabel = style({
   fontWeight: tokens.fontWeights.medium,
   fontSize: tokens.fontSizes.md,
-  color: tokens.colors.textPrimary
+  color: tokens.colors.textPrimary,
+  margin: 0
+})
+
+export const ratingDescription = style({
+  fontSize: tokens.fontSizes.sm,
+  color: tokens.colors.textSecondary,
+  marginBottom: tokens.space.md
 })
 
 export const ratingButtonsContainer = style({
@@ -74,11 +82,11 @@ export const ratingButtonSelected = style({
   backgroundColor: tokens.colors.primary,
   color: 'white',
   borderColor: tokens.colors.primary,
-  boxShadow: tokens.shadows.sm,
+  boxShadow: 'none',
 
   ':hover': {
     backgroundColor: tokens.colors.primary,
-    filter: 'brightness(1.1)'
+    filter: 'brightness(1.05)'
   }
 })
 
@@ -86,5 +94,12 @@ export const buttonContainer = style({
   display: 'flex',
   justifyContent: 'flex-end',
   gap: tokens.space.md,
-  marginTop: tokens.space.md
+  marginTop: tokens.space.lg
+})
+
+export const divider = style({
+  width: '100%',
+  height: '1px',
+  backgroundColor: tokens.colors.border,
+  margin: `${tokens.space.xl} 0`
 })

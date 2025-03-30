@@ -2,7 +2,11 @@ import React from 'react'
 
 import { Modal } from '../../molecules/Modal/Modal'
 import { IntrospectionForm } from '../IntrospectionForm/IntrospectionForm'
-import { modalHeader, modalTitle } from './IntrospectionModal.css'
+import {
+  modalHeader,
+  modalSubtitle,
+  modalTitle
+} from './IntrospectionModal.css'
 
 interface IntrospectionModalProps {
   isOpen: boolean
@@ -13,6 +17,13 @@ export const IntrospectionModal: React.FC<IntrospectionModalProps> = ({
   isOpen,
   onClose
 }) => {
+  const currentDate = new Date().toLocaleDateString('ja-JP', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long'
+  })
+
   return (
     <Modal
       isOpen={isOpen}
@@ -20,7 +31,10 @@ export const IntrospectionModal: React.FC<IntrospectionModalProps> = ({
       title=""
       customHeader={
         <div className={modalHeader}>
-          <h2 className={modalTitle}>今日の振り返り</h2>
+          <div>
+            <h2 className={modalTitle}>今日の振り返り</h2>
+            <div className={modalSubtitle}>{currentDate}</div>
+          </div>
         </div>
       }
     >

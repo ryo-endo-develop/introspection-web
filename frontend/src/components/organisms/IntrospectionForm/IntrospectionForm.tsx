@@ -7,17 +7,20 @@ import {
   StatusRating
 } from '../../../types/introspection.types'
 import { Button } from '../../atoms/Button/Button'
+import { Card, CardBody, CardHeader } from '../../atoms/Card/Card'
 import { TextArea } from '../../atoms/TextArea/TextArea'
 import {
   buttonContainer,
+  divider,
   formContainer,
-  formTitle,
   ratingButton,
   ratingButtonsContainer,
   ratingButtonSelected,
   ratingContainer,
+  ratingDescription,
   ratingLabel,
-  ratingSection
+  ratingSection,
+  sectionTitle
 } from './IntrospectionForm.css'
 
 // フォームの初期値
@@ -29,6 +32,24 @@ const initialFormState = {
   status: {
     mental: 3 as StatusRating,
     physical: 3 as StatusRating
+  }
+}
+
+// 評価の説明テキスト
+const ratingDescriptions = {
+  mental: {
+    1: '非常に悪い',
+    2: '悪い',
+    3: '普通',
+    4: '良い',
+    5: '非常に良い'
+  },
+  physical: {
+    1: '非常に悪い',
+    2: '悪い',
+    3: '普通',
+    4: '良い',
+    5: '非常に良い'
   }
 }
 
@@ -67,7 +88,7 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
     const currentDate = new Date().toISOString().split('T')[0]
 
     const newEntry: IntrospectionEntry = {
-      id: 'FIX ME',
+      id: `entry-${Date.now()}`,
       date: currentDate,
       title: formData.title || `${currentDate}の振り返り`,
       activities: formData.activities,
@@ -100,59 +121,92 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className={`${formContainer} ${className}`}>
-      <div className={formTitle}>
-        <TextArea
-          label="今日のタイトル"
-          name="title"
-          value={formData.title}
-          onChange={handleInputChange}
-          placeholder="今日の振り返りのタイトルを入力してください"
-          rows={1}
-        />
-      </div>
+      <Card>
+        <CardHeader>
+          <div className={sectionTitle}>今日のタイトル</div>
+        </CardHeader>
+        <CardBody>
+          <TextArea
+            label=""
+            name="title"
+            value={formData.title}
+            onChange={handleInputChange}
+            placeholder="今日の振り返りのタイトルを入力してください"
+            rows={1}
+          />
+        </CardBody>
+      </Card>
 
       <div className={ratingSection}>
-        <div className={ratingContainer}>
-          <label className={ratingLabel}>メンタル状態（1-5）</label>
-          <div className={ratingButtonsContainer}>
-            {renderRatingButtons('mental', formData.status.mental)}
-          </div>
-        </div>
+        <Card className={ratingContainer}>
+          <CardHeader>
+            <div className={sectionTitle}>メンタル状態</div>
+          </CardHeader>
+          <CardBody>
+            <div className={ratingDescription}>
+              現在: {ratingDescriptions.mental[formData.status.mental]}
+            </div>
+            <div className={ratingButtonsContainer}>
+              {renderRatingButtons('mental', formData.status.mental)}
+            </div>
+          </CardBody>
+        </Card>
 
-        <div className={ratingContainer}>
-          <label className={ratingLabel}>体調（1-5）</label>
-          <div className={ratingButtonsContainer}>
-            {renderRatingButtons('physical', formData.status.physical)}
-          </div>
-        </div>
+        <Card className={ratingContainer}>
+          <CardHeader>
+            <div className={sectionTitle}>体調</div>
+          </CardHeader>
+          <CardBody>
+            <div className={ratingDescription}>
+              現在: {ratingDescriptions.physical[formData.status.physical]}
+            </div>
+            <div className={ratingButtonsContainer}>
+              {renderRatingButtons('physical', formData.status.physical)}
+            </div>
+          </CardBody>
+        </Card>
       </div>
 
-      <TextArea
-        label="うまく行ったこと"
-        name="activities"
-        value={formData.activities}
-        onChange={handleInputChange}
-        placeholder="今日うまく行ったことを入力してください"
-        rows={3}
-      />
+      <Card>
+        <CardHeader>
+          <div className={sectionTitle}>今日の振り返り</div>
+        </CardHeader>
+        <CardBody>
+          <TextArea
+            label=""
+            description="今日達成できたことや成功した経験について記録しましょう"
+            name="activities"
+            value={formData.activities}
+            onChange={handleInputChange}
+            placeholder="今日うまく行ったことを入力してください"
+            rows={3}
+          />
 
-      <TextArea
-        label="改善したいこと"
-        name="improvements"
-        value={formData.improvements}
-        onChange={handleInputChange}
-        placeholder="改善したいことを入力してください"
-        rows={3}
-      />
+          <div className={divider} />
 
-      <TextArea
-        label="次に試したいこと"
-        name="nextSteps"
-        value={formData.nextSteps}
-        onChange={handleInputChange}
-        placeholder="次に試したいことを入力してください"
-        rows={3}
-      />
+          <TextArea
+            label=""
+            description="今後向上させたい点や課題を特定しましょう"
+            name="improvements"
+            value={formData.improvements}
+            onChange={handleInputChange}
+            placeholder="改善したいことを入力してください"
+            rows={3}
+          />
+
+          <div className={divider} />
+
+          <TextArea
+            label=""
+            description="明日以降に実践したいアクションやアイデアを記録しましょう"
+            name="nextSteps"
+            value={formData.nextSteps}
+            onChange={handleInputChange}
+            placeholder="次に試したいことを入力してください"
+            rows={3}
+          />
+        </CardBody>
+      </Card>
 
       <div className={buttonContainer}>
         <Button variant="secondary" size="md" onClick={onClose}>
