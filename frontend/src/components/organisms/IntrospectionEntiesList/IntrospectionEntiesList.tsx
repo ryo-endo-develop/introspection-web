@@ -4,7 +4,7 @@ import { IntrospectionEntry } from '../../../types/introspection.types'
 import { Card, CardBody, CardHeader } from '../../atoms/Card/Card'
 import { Heading } from '../../atoms/Heading/Heading'
 import { Text } from '../../atoms/Text/Text'
-import { IntrospectionCard } from '../../molecules/IntrospectionCard/IntrospectionCard'
+import { IntrospectionCard } from '../IntrospectionCard/IntrospectionCard'
 import { pagination } from './IntrospectionEntiesList.css'
 
 interface IntrospectionEntiesListProps {

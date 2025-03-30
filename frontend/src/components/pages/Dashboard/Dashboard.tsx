@@ -6,6 +6,7 @@ import { Button } from '../../atoms/Button/Button'
 import { Heading } from '../../atoms/Heading/Heading'
 import { Text } from '../../atoms/Text/Text'
 import { GoalProgressCard } from '../../organisms/GoalProgressCard/GoalProgressCard'
+import { GoalProgressModal } from '../../organisms/GoalProgressModal/GoalProgressModal'
 import { IntrospectionEntiesList } from '../../organisms/IntrospectionEntiesList/IntrospectionEntiesList'
 import { IntrospectionModal } from '../../organisms/IntrospectionModal/IntrospectionModal'
 import { Sidebar } from '../../organisms/Sidebar/Sidebar'
@@ -20,7 +21,6 @@ import {
   statusSection,
   titleSection
 } from './Dashboard.css'
-import { GoalProgressModal } from '../../organisms/GoalProgressModal/GoalProgressModal'
 
 export const Dashboard: React.FC = () => {
   const [isIntrospectionModalOpen, setIsIntrospectionModalOpen] =

@@ -18,7 +18,6 @@ import {
   ratingButtonSelected,
   ratingContainer,
   ratingDescription,
-  ratingLabel,
   ratingSection,
   sectionTitle
 } from './IntrospectionForm.css'
