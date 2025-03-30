@@ -20,23 +20,21 @@ import {
   statusSection,
   titleSection
 } from './Dashboard.css'
+import { GoalProgressModal } from '../../organisms/GoalProgressModal/GoalProgressModal'
 
 export const Dashboard: React.FC = () => {
   const [isIntrospectionModalOpen, setIsIntrospectionModalOpen] =
     useState(false)
+  const [isGoalProgressModalOpen, setIsGoalProgressModalOpen] = useState(false)
 
   // This would normally come from the Redux store
   const journalEntries = useSelector(
     (state: RootState) => state.entries.entries
   )
   const trendData = useSelector((state: RootState) => state.entries.trendData)
-
-  const goalProgressItems = [
-    { label: '朝の運動', value: 70, maxValue: 100, color: '#4CAF50' },
-    { label: '読書習慣', value: 50, maxValue: 100, color: '#5C73E6' },
-    { label: '瞑想', value: 25, maxValue: 100, color: '#FFD54F' },
-    { label: 'タスク管理の改善', value: 40, maxValue: 100, color: '#FF7878' }
-  ]
+  const goalProgressItems = useSelector(
+    (state: RootState) => state.goals.goalProgressItems
+  )
 
   const formatDate = () => {
     const now = new Date()
@@ -59,7 +57,12 @@ export const Dashboard: React.FC = () => {
             <Text variant="secondary">{formatDate()}</Text>
           </div>
           <div className={actionsSection}>
-            <Button variant="primary" size="md" className={actionButton}>
+            <Button
+              variant="primary"
+              size="md"
+              className={actionButton}
+              onClick={() => setIsGoalProgressModalOpen(true)}
+            >
               目標入力
             </Button>
             <Button
@@ -92,6 +95,11 @@ export const Dashboard: React.FC = () => {
       <IntrospectionModal
         isOpen={isIntrospectionModalOpen}
         onClose={() => setIsIntrospectionModalOpen(false)}
+      />
+
+      <GoalProgressModal
+        isOpen={isGoalProgressModalOpen}
+        onClose={() => setIsGoalProgressModalOpen(false)}
       />
     </div>
   )
