@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Modal } from '../../molecules/Modal/Modal'
+import { Modal } from '../../atoms/Modal/Modal'
 import { IntrospectionForm } from '../IntrospectionForm/IntrospectionForm'
 import {
   modalHeader,

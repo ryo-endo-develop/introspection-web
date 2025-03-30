@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Modal } from '../../molecules/Modal/Modal'
+import { Modal } from '../../atoms/Modal/Modal'
 import { GoalProgressForm } from '../GoalProgressForm/GoalProgressForm'
 import { modalHeader, modalSubtitle, modalTitle } from './GoalProgressModal.css'
 
