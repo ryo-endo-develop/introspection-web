@@ -5,9 +5,9 @@ import { Card, CardBody, CardHeader } from '../../atoms/Card/Card'
 import { Heading } from '../../atoms/Heading/Heading'
 import { Text } from '../../atoms/Text/Text'
 import { IntrospectionCard } from '../IntrospectionCard/IntrospectionCard'
-import { pagination } from './IntrospectionEntiesList.css'
+import { pagination } from './IntrospectionRegisteredList.css'
 
-interface IntrospectionEntiesListProps {
+interface IntrospectionRegisteredListProps {
   title: string
   entries: IntrospectionEntry[]
   currentPage: number
@@ -16,8 +16,8 @@ interface IntrospectionEntiesListProps {
   className?: string
 }
 
-export const IntrospectionEntiesList: React.FC<
-  IntrospectionEntiesListProps
+export const IntrospectionRegisteredList: React.FC<
+  IntrospectionRegisteredListProps
 > = ({
   title,
   entries,
