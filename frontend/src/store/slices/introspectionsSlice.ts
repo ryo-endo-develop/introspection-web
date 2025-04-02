@@ -2,8 +2,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import { IntrospectionEntry, TrendData } from '../../types/introspection.types'
 
-interface EntriesState {
-  entries: IntrospectionEntry[]
+interface IntrospectionsState {
+  data: IntrospectionEntry[]
   trendData: TrendData[]
   currentStatus: {
     physical: number
@@ -11,8 +11,8 @@ interface EntriesState {
   }
 }
 
-const initialState: EntriesState = {
-  entries: [
+const initialState: IntrospectionsState = {
+  data: [
     {
       id: '1',
       date: '2025-03-22',
@@ -52,21 +52,22 @@ const initialState: EntriesState = {
   }
 }
 
-const entriesSlice = createSlice({
-  name: 'entries',
+const introspectionsSlice = createSlice({
+  name: 'introspections',
   initialState,
   reducers: {
-    addEntry(state, action: PayloadAction<IntrospectionEntry>) {
-      state.entries.unshift(action.payload)
+    addIntrospection(state, action: PayloadAction<IntrospectionEntry>) {
+      state.data.unshift(action.payload)
     },
-    updateEntry(state, action: PayloadAction<IntrospectionEntry>) {
-      const index = state.entries.findIndex((e) => e.id === action.payload.id)
+    updateIntrospection(state, action: PayloadAction<IntrospectionEntry>) {
+      const index = state.data.findIndex((e) => e.id === action.payload.id)
       if (index !== -1) {
-        state.entries[index] = action.payload
+        state.data[index] = action.payload
       }
     }
   }
 })
 
-export const { addEntry, updateEntry } = entriesSlice.actions
-export default entriesSlice.reducer
+export const { addIntrospection, updateIntrospection } =
+  introspectionsSlice.actions
+export default introspectionsSlice.reducer

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 
-import { addEntry } from '../../../store/slices/entriesSlice'
+import { addIntrospection } from '../../../store/slices/introspectionsSlice'
 import {
   IntrospectionEntry,
   StatusRating
@@ -96,7 +96,7 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
       status: formData.status
     }
 
-    dispatch(addEntry(newEntry))
+    dispatch(addIntrospection(newEntry))
     onClose()
   }
 

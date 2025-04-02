@@ -28,10 +28,12 @@ export const Dashboard: React.FC = () => {
   const [isGoalProgressModalOpen, setIsGoalProgressModalOpen] = useState(false)
 
   // This would normally come from the Redux store
-  const journalEntries = useSelector(
-    (state: RootState) => state.entries.entries
+  const introspections = useSelector(
+    (state: RootState) => state.introspections.data
   )
-  const trendData = useSelector((state: RootState) => state.entries.trendData)
+  const trendData = useSelector(
+    (state: RootState) => state.introspections.trendData
+  )
   const goalProgressItems = useSelector(
     (state: RootState) => state.goals.goalProgressItems
   )
@@ -84,7 +86,7 @@ export const Dashboard: React.FC = () => {
         <div className={entriesSection}>
           <IntrospectionEntiesList
             title="最近の振り返り"
-            entries={journalEntries}
+            entries={introspections}
             currentPage={1}
             totalEntries={28}
             pageSize={5}
