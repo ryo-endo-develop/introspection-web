@@ -1,7 +1,7 @@
 import React from 'react'
 
 import {
-  IntrospectionEntry,
+  IntrospectionData,
   StatusRating
 } from '../../../types/introspection.types'
 import { Text } from '../../atoms/Text/Text'
@@ -18,12 +18,12 @@ import {
 } from './IntrospectionCard.css'
 
 interface IntrospectionCardProps {
-  entry: IntrospectionEntry
+  introspection: IntrospectionData
   className?: string
 }
 
 export const IntrospectionCard: React.FC<IntrospectionCardProps> = ({
-  entry,
+  introspection,
   className = ''
 }) => {
   const getRatingClassName = (rating: StatusRating) => {
@@ -55,28 +55,30 @@ export const IntrospectionCard: React.FC<IntrospectionCardProps> = ({
     <div className={`${container} ${className}`}>
       <div className={date}>
         <Text size="sm" variant="secondary">
-          {formatDate(entry.date)}
+          {formatDate(introspection.date)}
         </Text>
       </div>
 
       <div className={contentArea}>
         <Text size="md" weight="medium">
-          {entry.title}
+          {introspection.title}
         </Text>
         <Text size="sm" variant="secondary">
-          うまく行ったこと: {entry.activities}
+          うまく行ったこと: {introspection.activities}
         </Text>
         <Text size="sm" variant="secondary">
-          改善したいこと: {entry.improvements}
+          改善したいこと: {introspection.improvements}
         </Text>
         <Text size="sm" variant="secondary">
-          次に試したいこと: {entry.nextSteps}
+          次に試したいこと: {introspection.nextSteps}
         </Text>
       </div>
 
       <div className={statusIndicators}>
-        <div className={getRatingClassName(entry.status.physical)}></div>
-        <div className={getRatingClassName(entry.status.mental)}></div>
+        <div
+          className={getRatingClassName(introspection.status.physical)}
+        ></div>
+        <div className={getRatingClassName(introspection.status.mental)}></div>
       </div>
     </div>
   )

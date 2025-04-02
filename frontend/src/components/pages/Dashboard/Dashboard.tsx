@@ -15,8 +15,8 @@ import {
   actionButton,
   actionsSection,
   dashboardContainer,
-  entriesSection,
   header,
+  introspectionsSection,
   mainContent,
   statusSection,
   titleSection
@@ -83,12 +83,12 @@ export const Dashboard: React.FC = () => {
           <TrendCard title="月間トレンド" data={trendData} />
         </div>
 
-        <div className={entriesSection}>
+        <div className={introspectionsSection}>
           <IntrospectionRegisteredList
             title="最近の振り返り"
-            entries={introspections}
+            data={introspections}
             currentPage={1}
-            totalEntries={28}
+            total={28}
             pageSize={5}
           />
         </div>

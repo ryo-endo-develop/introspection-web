@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { IntrospectionEntry, TrendData } from '../../types/introspection.types'
+import { IntrospectionData, TrendData } from '../../types/introspection.types'
 
 interface IntrospectionsState {
-  data: IntrospectionEntry[]
+  data: IntrospectionData[]
   trendData: TrendData[]
   currentStatus: {
     physical: number
@@ -56,10 +56,10 @@ const introspectionsSlice = createSlice({
   name: 'introspections',
   initialState,
   reducers: {
-    addIntrospection(state, action: PayloadAction<IntrospectionEntry>) {
+    addIntrospection(state, action: PayloadAction<IntrospectionData>) {
       state.data.unshift(action.payload)
     },
-    updateIntrospection(state, action: PayloadAction<IntrospectionEntry>) {
+    updateIntrospection(state, action: PayloadAction<IntrospectionData>) {
       const index = state.data.findIndex((e) => e.id === action.payload.id)
       if (index !== -1) {
         state.data[index] = action.payload

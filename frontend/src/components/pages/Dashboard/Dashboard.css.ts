@@ -102,6 +102,6 @@ export const statusSection = style({
   }
 })
 
-export const entriesSection = style({
+export const introspectionsSection = style({
   width: '100%'
 })

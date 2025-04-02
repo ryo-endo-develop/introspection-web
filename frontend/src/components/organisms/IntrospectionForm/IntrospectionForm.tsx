@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 
 import { addIntrospection } from '../../../store/slices/introspectionsSlice'
 import {
-  IntrospectionEntry,
+  IntrospectionData,
   StatusRating
 } from '../../../types/introspection.types'
 import { Button } from '../../atoms/Button/Button'
@@ -86,7 +86,7 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
 
     const currentDate = new Date().toISOString().split('T')[0]
 
-    const newEntry: IntrospectionEntry = {
+    const newIntrospection: IntrospectionData = {
       id: `entry-${Date.now()}`,
       date: currentDate,
       title: formData.title || `${currentDate}の振り返り`,
@@ -96,7 +96,7 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
       status: formData.status
     }
 
-    dispatch(addIntrospection(newEntry))
+    dispatch(addIntrospection(newIntrospection))
     onClose()
   }
 

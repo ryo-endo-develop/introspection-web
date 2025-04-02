@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { IntrospectionEntry } from '../../../types/introspection.types'
+import { IntrospectionData } from '../../../types/introspection.types'
 import { Card, CardBody, CardHeader } from '../../atoms/Card/Card'
 import { Heading } from '../../atoms/Heading/Heading'
 import { Text } from '../../atoms/Text/Text'
@@ -9,23 +9,16 @@ import { pagination } from './IntrospectionRegisteredList.css'
 
 interface IntrospectionRegisteredListProps {
   title: string
-  entries: IntrospectionEntry[]
+  data: IntrospectionData[]
   currentPage: number
-  totalEntries: number
+  total: number
   pageSize: number
   className?: string
 }
 
 export const IntrospectionRegisteredList: React.FC<
   IntrospectionRegisteredListProps
-> = ({
-  title,
-  entries,
-  currentPage,
-  totalEntries,
-  pageSize,
-  className = ''
-}) => {
+> = ({ title, data, currentPage, total, pageSize, className = '' }) => {
   console.log(currentPage)
   return (
     <Card className={`${className}`}>
@@ -34,13 +27,13 @@ export const IntrospectionRegisteredList: React.FC<
       </CardHeader>
       <CardBody>
         <div>
-          {entries.map((entry) => (
-            <IntrospectionCard key={entry.id} entry={entry} />
+          {data.map((data) => (
+            <IntrospectionCard key={data.id} introspection={data} />
           ))}
         </div>
         <div className={pagination}>
           <Text size="sm" variant="secondary">
-            {'< 前の5 / ' + Math.ceil(totalEntries / pageSize) + '件へ >'}
+            {'< 前の5 / ' + Math.ceil(total / pageSize) + '件へ >'}
           </Text>
         </div>
       </CardBody>

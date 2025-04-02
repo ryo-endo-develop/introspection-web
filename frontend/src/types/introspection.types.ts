@@ -5,7 +5,7 @@ export interface Status {
   mental: StatusRating
 }
 
-export interface IntrospectionEntry {
+export interface IntrospectionData {
   id: string
   date: string
   title: string
