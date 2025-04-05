@@ -1,14 +1,11 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-interface UserData {
-  id: string
-  name: string
-  email: string
-}
-
-interface LoginResponse {
-  user: UserData
-}
+import {
+  LoginCredentialsSchema,
+  LoginResponseSchema,
+  UserDataSchema,
+  ZodLoginCredentials,
+  ZodUserData} from '../../schemas/validationSchemas'
 
 interface UserState {
   id: string | null
@@ -29,34 +26,57 @@ const initialState: UserState = {
 }
 
 // 非同期アクション
-export const fetchUserData = createAsyncThunk<UserData>(
+export const fetchUserData = createAsyncThunk<ZodUserData>(
   'user/fetchUserData',
   async () => {
     const response = await fetch('/api/user')
     if (!response.ok) {
       throw new Error('Failed to fetch user data')
     }
-    return await response.json()
+    const data = await response.json()
+
+    // Zodによるバリデーション
+    const result = UserDataSchema.safeParse(data)
+    if (!result.success) {
+      throw new Error(`データ検証エラー: ${result.error.message}`)
+    }
+
+    return result.data
   }
 )
 
-export const loginUser = createAsyncThunk<
-  UserData,
-  { email: string; password: string }
->('user/loginUser', async (credentials) => {
-  const response = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(credentials)
-  })
-  if (!response.ok) {
-    throw new Error('Login failed')
+export const loginUser = createAsyncThunk<ZodUserData, ZodLoginCredentials>(
+  'user/loginUser',
+  async (credentials) => {
+    // 入力検証
+    const credentialResult = LoginCredentialsSchema.safeParse(credentials)
+    if (!credentialResult.success) {
+      throw new Error(`入力検証エラー: ${credentialResult.error.message}`)
+    }
+
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(credentialResult.data)
+    })
+
+    if (!response.ok) {
+      throw new Error('Login failed')
+    }
+
+    const data = await response.json()
+
+    // レスポンス検証
+    const result = LoginResponseSchema.safeParse(data)
+    if (!result.success) {
+      throw new Error(`レスポンス検証エラー: ${result.error.message}`)
+    }
+
+    return result.data.user
   }
-  const data: LoginResponse = await response.json()
-  return data.user
-})
+)
 
 export const logoutUser = createAsyncThunk<void>(
   'user/logoutUser',

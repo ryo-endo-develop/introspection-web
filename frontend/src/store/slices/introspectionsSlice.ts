@@ -1,14 +1,21 @@
-import { createAsyncThunk,createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { z } from 'zod'
 
-import { IntrospectionData, TrendData } from '../../types/introspection.types'
+import {
+  CreateIntrospectionSchema,
+  CurrentStatusSchema,
+  IntrospectionDataSchema,
+  TrendDataSchema,
+  ZodCreateIntrospection,
+  ZodCurrentStatus,
+  ZodIntrospectionData,
+  ZodTrendData
+} from '../../schemas/validationSchemas'
 
 interface IntrospectionsState {
-  data: IntrospectionData[]
-  trendData: TrendData[]
-  currentStatus: {
-    physical: number
-    mental: number
-  }
+  data: ZodIntrospectionData[]
+  trendData: ZodTrendData[]
+  currentStatus: ZodCurrentStatus
   loading: {
     introspections: boolean
     trends: boolean
@@ -33,81 +40,140 @@ const initialState: IntrospectionsState = {
 }
 
 // 非同期アクション
-export const fetchIntrospections = createAsyncThunk(
+export const fetchIntrospections = createAsyncThunk<ZodIntrospectionData[]>(
   'introspections/fetchIntrospections',
   async () => {
     const response = await fetch('/api/introspections')
     if (!response.ok) {
       throw new Error('Failed to fetch introspections')
     }
-    return (await response.json()) as IntrospectionData[]
+
+    const data = await response.json()
+
+    // Zodによるバリデーション
+    const result = z.array(IntrospectionDataSchema).safeParse(data)
+    if (!result.success) {
+      throw new Error(`データ検証エラー: ${result.error.message}`)
+    }
+
+    return result.data
   }
 )
 
-export const fetchTrendData = createAsyncThunk(
+export const fetchTrendData = createAsyncThunk<ZodTrendData[]>(
   'introspections/fetchTrendData',
   async () => {
     const response = await fetch('/api/trends')
     if (!response.ok) {
       throw new Error('Failed to fetch trend data')
     }
-    return (await response.json()) as TrendData[]
+
+    const data = await response.json()
+
+    // Zodによるバリデーション
+    const result = z.array(TrendDataSchema).safeParse(data)
+    if (!result.success) {
+      throw new Error(`データ検証エラー: ${result.error.message}`)
+    }
+
+    return result.data
   }
 )
 
-export const fetchCurrentStatus = createAsyncThunk(
+export const fetchCurrentStatus = createAsyncThunk<ZodCurrentStatus>(
   'introspections/fetchCurrentStatus',
   async () => {
     const response = await fetch('/api/status/current')
     if (!response.ok) {
       throw new Error('Failed to fetch current status')
     }
-    return (await response.json()) as { physical: number; mental: number }
+
+    const data = await response.json()
+
+    // Zodによるバリデーション
+    const result = CurrentStatusSchema.safeParse(data)
+    if (!result.success) {
+      throw new Error(`データ検証エラー: ${result.error.message}`)
+    }
+
+    return result.data
   }
 )
 
-export const addIntrospectionThunk = createAsyncThunk(
-  'introspections/addIntrospectionThunk',
-  async (introspection: Omit<IntrospectionData, 'id'>) => {
-    const response = await fetch('/api/introspections', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(introspection)
-    })
-    if (!response.ok) {
-      throw new Error('Failed to add introspection')
-    }
-    return (await response.json()) as IntrospectionData
+export const addIntrospectionThunk = createAsyncThunk<
+  ZodIntrospectionData,
+  ZodCreateIntrospection
+>('introspections/addIntrospectionThunk', async (introspection) => {
+  // 入力検証
+  const introspectionResult = CreateIntrospectionSchema.safeParse(introspection)
+  if (!introspectionResult.success) {
+    throw new Error(`入力検証エラー: ${introspectionResult.error.message}`)
   }
-)
 
-export const updateIntrospectionThunk = createAsyncThunk(
-  'introspections/updateIntrospectionThunk',
-  async (introspection: IntrospectionData) => {
-    const response = await fetch(`/api/introspections/${introspection.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(introspection)
-    })
-    if (!response.ok) {
-      throw new Error('Failed to update introspection')
-    }
-    return (await response.json()) as IntrospectionData
+  const response = await fetch('/api/introspections', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(introspectionResult.data)
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to add introspection')
   }
-)
+
+  const data = await response.json()
+
+  // レスポンス検証
+  const result = IntrospectionDataSchema.safeParse(data)
+  if (!result.success) {
+    throw new Error(`レスポンス検証エラー: ${result.error.message}`)
+  }
+
+  return result.data
+})
+
+export const updateIntrospectionThunk = createAsyncThunk<
+  ZodIntrospectionData,
+  ZodIntrospectionData
+>('introspections/updateIntrospectionThunk', async (introspection) => {
+  // 入力検証
+  const introspectionResult = IntrospectionDataSchema.safeParse(introspection)
+  if (!introspectionResult.success) {
+    throw new Error(`入力検証エラー: ${introspectionResult.error.message}`)
+  }
+
+  const response = await fetch(`/api/introspections/${introspection.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(introspectionResult.data)
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to update introspection')
+  }
+
+  const data = await response.json()
+
+  // レスポンス検証
+  const result = IntrospectionDataSchema.safeParse(data)
+  if (!result.success) {
+    throw new Error(`レスポンス検証エラー: ${result.error.message}`)
+  }
+
+  return result.data
+})
 
 const introspectionsSlice = createSlice({
   name: 'introspections',
   initialState,
   reducers: {
-    addIntrospection(state, action: PayloadAction<IntrospectionData>) {
+    addIntrospection(state, action: PayloadAction<ZodIntrospectionData>) {
       state.data.unshift(action.payload)
     },
-    updateIntrospection(state, action: PayloadAction<IntrospectionData>) {
+    updateIntrospection(state, action: PayloadAction<ZodIntrospectionData>) {
       const index = state.data.findIndex((e) => e.id === action.payload.id)
       if (index !== -1) {
         state.data[index] = action.payload

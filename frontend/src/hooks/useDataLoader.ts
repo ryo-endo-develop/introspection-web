@@ -18,26 +18,45 @@ export const useDataLoader = () => {
   useEffect(() => {
     if (isAuthenticated) {
       const fetchData = async () => {
-        await dispatch(fetchIntrospections())
-        await dispatch(fetchTrendData())
-        await dispatch(fetchCurrentStatus())
-        await dispatch(fetchGoalProgress())
+        try {
+          await dispatch(fetchIntrospections()).unwrap()
+          await dispatch(fetchTrendData()).unwrap()
+          await dispatch(fetchCurrentStatus()).unwrap()
+          await dispatch(fetchGoalProgress()).unwrap()
+        } catch (err) {
+          // Zodによるバリデーションエラーを含むエラー処理
+          const errorMessage =
+            err instanceof Error
+              ? err.message
+              : 'データ取得時にエラーが発生しました'
+          console.error('データ取得時にエラー:', errorMessage)
+          // UIにエラーを表示（react-toastifyを使用する場合）
+          // toast.error(errorMessage)
+        }
       }
 
-      fetchData().catch((err) => {
-        console.error('データ取得時にエラー:', err)
-      })
+      void fetchData()
     }
   }, [dispatch, isAuthenticated])
 
   // アプリ起動時にユーザー情報を取得
   useEffect(() => {
     const fetchUser = async () => {
-      await dispatch(fetchUserData())
+      try {
+        await dispatch(fetchUserData()).unwrap()
+      } catch (err) {
+        // Zodによるバリデーションエラーを含むエラー処理
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : 'ユーザー情報取得時にエラーが発生しました'
+        console.error('ユーザー情報取得時にエラー:', errorMessage)
+
+        // UIにエラーを表示（react-toastifyを使用する場合）
+        // toast.error(errorMessage)
+      }
     }
 
-    fetchUser().catch((err) => {
-      console.error('ユーザー情報取得時にエラー:', err)
-    })
+    void fetchUser()
   }, [dispatch])
 }

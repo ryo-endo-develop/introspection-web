@@ -1,9 +1,13 @@
-import { createAsyncThunk,createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { z } from 'zod'
 
-import { GoalProgress } from '../../types/introspection.types'
+import {
+  GoalProgressSchema,
+  ZodGoalProgress
+} from '../../schemas/validationSchemas'
 
 interface GoalsState {
-  goalProgressItems: GoalProgress[]
+  goalProgressItems: ZodGoalProgress[]
   loading: boolean
   error: string | null
 }
@@ -14,57 +18,106 @@ const initialState: GoalsState = {
   error: null
 }
 
+// Single goal update schema
+const SingleGoalUpdateSchema = z.object({
+  index: z.number().int().min(0),
+  value: z.number().min(0)
+})
+
+type SingleGoalUpdate = z.infer<typeof SingleGoalUpdateSchema>
+
 // 非同期アクション
-export const fetchGoalProgress = createAsyncThunk(
+export const fetchGoalProgress = createAsyncThunk<ZodGoalProgress[]>(
   'goals/fetchGoalProgress',
   async () => {
     const response = await fetch('/api/goals/progress')
     if (!response.ok) {
       throw new Error('Failed to fetch goal progress')
     }
-    return (await response.json()) as GoalProgress[]
+
+    const data = await response.json()
+
+    // Zodによるバリデーション
+    const result = z.array(GoalProgressSchema).safeParse(data)
+    if (!result.success) {
+      throw new Error(`データ検証エラー: ${result.error.message}`)
+    }
+
+    return result.data
   }
 )
 
-export const updateGoalProgressThunk = createAsyncThunk(
-  'goals/updateGoalProgressThunk',
-  async (goals: GoalProgress[]) => {
-    const response = await fetch('/api/goals/progress', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(goals)
-    })
-    if (!response.ok) {
-      throw new Error('Failed to update goal progress')
-    }
-    return (await response.json()) as GoalProgress[]
+export const updateGoalProgressThunk = createAsyncThunk<
+  ZodGoalProgress[],
+  ZodGoalProgress[]
+>('goals/updateGoalProgressThunk', async (goals) => {
+  // 入力検証
+  const goalsResult = z.array(GoalProgressSchema).safeParse(goals)
+  if (!goalsResult.success) {
+    throw new Error(`入力検証エラー: ${goalsResult.error.message}`)
   }
-)
 
-export const updateSingleGoalThunk = createAsyncThunk(
-  'goals/updateSingleGoalThunk',
-  async ({ index, value }: { index: number; value: number }) => {
-    const response = await fetch(`/api/goals/progress/${index}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ value })
-    })
-    if (!response.ok) {
-      throw new Error('Failed to update goal')
-    }
-    return (await response.json()) as { index: number; value: number }
+  const response = await fetch('/api/goals/progress', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(goalsResult.data)
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to update goal progress')
   }
-)
+
+  const data = await response.json()
+
+  // レスポンス検証
+  const result = z.array(GoalProgressSchema).safeParse(data)
+  if (!result.success) {
+    throw new Error(`レスポンス検証エラー: ${result.error.message}`)
+  }
+
+  return result.data
+})
+
+export const updateSingleGoalThunk = createAsyncThunk<
+  SingleGoalUpdate,
+  SingleGoalUpdate
+>('goals/updateSingleGoalThunk', async ({ index, value }) => {
+  // 入力検証
+  const updateResult = SingleGoalUpdateSchema.safeParse({ index, value })
+  if (!updateResult.success) {
+    throw new Error(`入力検証エラー: ${updateResult.error.message}`)
+  }
+
+  const response = await fetch(`/api/goals/progress/${index}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ value })
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to update goal')
+  }
+
+  const data = await response.json()
+
+  // レスポンス検証
+  const result = SingleGoalUpdateSchema.safeParse(data)
+  if (!result.success) {
+    throw new Error(`レスポンス検証エラー: ${result.error.message}`)
+  }
+
+  return result.data
+})
 
 const goalsSlice = createSlice({
   name: 'goals',
   initialState,
   reducers: {
-    updateGoalProgress(state, action: PayloadAction<GoalProgress[]>) {
+    updateGoalProgress(state, action: PayloadAction<ZodGoalProgress[]>) {
       state.goalProgressItems = action.payload
     },
     updateSingleGoal(
