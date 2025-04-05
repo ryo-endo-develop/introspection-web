@@ -1,4 +1,14 @@
-import { createAsyncThunk,createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+
+interface UserData {
+  id: string
+  name: string
+  email: string
+}
+
+interface LoginResponse {
+  user: UserData
+}
 
 interface UserState {
   id: string | null
@@ -19,7 +29,7 @@ const initialState: UserState = {
 }
 
 // 非同期アクション
-export const fetchUserData = createAsyncThunk(
+export const fetchUserData = createAsyncThunk<UserData>(
   'user/fetchUserData',
   async () => {
     const response = await fetch('/api/user')
@@ -30,33 +40,36 @@ export const fetchUserData = createAsyncThunk(
   }
 )
 
-export const loginUser = createAsyncThunk(
-  'user/loginUser',
-  async (credentials: { email: string; password: string }) => {
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(credentials)
-    })
-    if (!response.ok) {
-      throw new Error('Login failed')
-    }
-    const data = await response.json()
-    return data.user
-  }
-)
-
-export const logoutUser = createAsyncThunk('user/logoutUser', async () => {
-  const response = await fetch('/api/auth/logout', {
-    method: 'POST'
+export const loginUser = createAsyncThunk<
+  UserData,
+  { email: string; password: string }
+>('user/loginUser', async (credentials) => {
+  const response = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(credentials)
   })
   if (!response.ok) {
-    throw new Error('Logout failed')
+    throw new Error('Login failed')
   }
-  return await response.json()
+  const data: LoginResponse = await response.json()
+  return data.user
 })
+
+export const logoutUser = createAsyncThunk<void>(
+  'user/logoutUser',
+  async () => {
+    const response = await fetch('/api/auth/logout', {
+      method: 'POST'
+    })
+    if (!response.ok) {
+      throw new Error('Logout failed')
+    }
+    await response.json()
+  }
+)
 
 export const userSlice = createSlice({
   name: 'user',
