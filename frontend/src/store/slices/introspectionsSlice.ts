@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk,createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import { IntrospectionData, TrendData } from '../../types/introspection.types'
 
@@ -9,48 +9,96 @@ interface IntrospectionsState {
     physical: number
     mental: number
   }
+  loading: {
+    introspections: boolean
+    trends: boolean
+    status: boolean
+  }
+  error: string | null
 }
 
 const initialState: IntrospectionsState = {
-  data: [
-    {
-      id: '1',
-      date: '2025-03-22',
-      title: '新しいプロジェクト計画を立てた',
-      activities: '目標設定が明確にできた',
-      improvements: 'まだ時間配分が甘い',
-      nextSteps: '優先順位付けの新しい方法',
-      status: {
-        physical: 4,
-        mental: 5
-      }
-    },
-    {
-      id: '2',
-      date: '2025-03-21',
-      title: 'ワークライフバランスを見直す必要がある',
-      activities: '業務効率が上がった',
-      improvements: '休息時間の確保',
-      nextSteps: 'タイムブロッキング手法の活用',
-      status: {
-        physical: 3,
-        mental: 2
-      }
-    }
-  ],
-  trendData: [
-    { date: '2025-03-01', mental: 3.5, physical: 4.0 },
-    { date: '2025-03-05', mental: 2.8, physical: 3.2 },
-    { date: '2025-03-10', mental: 3.2, physical: 3.8 },
-    { date: '2025-03-15', mental: 3.5, physical: 3.2 },
-    { date: '2025-03-20', mental: 3.0, physical: 3.8 },
-    { date: '2025-03-23', mental: 3.4, physical: 4.3 }
-  ],
+  data: [],
+  trendData: [],
   currentStatus: {
-    physical: 3.8,
-    mental: 3.5
-  }
+    physical: 0,
+    mental: 0
+  },
+  loading: {
+    introspections: false,
+    trends: false,
+    status: false
+  },
+  error: null
 }
+
+// 非同期アクション
+export const fetchIntrospections = createAsyncThunk(
+  'introspections/fetchIntrospections',
+  async () => {
+    const response = await fetch('/api/introspections')
+    if (!response.ok) {
+      throw new Error('Failed to fetch introspections')
+    }
+    return (await response.json()) as IntrospectionData[]
+  }
+)
+
+export const fetchTrendData = createAsyncThunk(
+  'introspections/fetchTrendData',
+  async () => {
+    const response = await fetch('/api/trends')
+    if (!response.ok) {
+      throw new Error('Failed to fetch trend data')
+    }
+    return (await response.json()) as TrendData[]
+  }
+)
+
+export const fetchCurrentStatus = createAsyncThunk(
+  'introspections/fetchCurrentStatus',
+  async () => {
+    const response = await fetch('/api/status/current')
+    if (!response.ok) {
+      throw new Error('Failed to fetch current status')
+    }
+    return (await response.json()) as { physical: number; mental: number }
+  }
+)
+
+export const addIntrospectionThunk = createAsyncThunk(
+  'introspections/addIntrospectionThunk',
+  async (introspection: Omit<IntrospectionData, 'id'>) => {
+    const response = await fetch('/api/introspections', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(introspection)
+    })
+    if (!response.ok) {
+      throw new Error('Failed to add introspection')
+    }
+    return (await response.json()) as IntrospectionData
+  }
+)
+
+export const updateIntrospectionThunk = createAsyncThunk(
+  'introspections/updateIntrospectionThunk',
+  async (introspection: IntrospectionData) => {
+    const response = await fetch(`/api/introspections/${introspection.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(introspection)
+    })
+    if (!response.ok) {
+      throw new Error('Failed to update introspection')
+    }
+    return (await response.json()) as IntrospectionData
+  }
+)
 
 const introspectionsSlice = createSlice({
   name: 'introspections',
@@ -65,6 +113,62 @@ const introspectionsSlice = createSlice({
         state.data[index] = action.payload
       }
     }
+  },
+  extraReducers: (builder) => {
+    // fetchIntrospections
+    builder.addCase(fetchIntrospections.pending, (state) => {
+      state.loading.introspections = true
+      state.error = null
+    })
+    builder.addCase(fetchIntrospections.fulfilled, (state, action) => {
+      state.loading.introspections = false
+      state.data = action.payload
+    })
+    builder.addCase(fetchIntrospections.rejected, (state, action) => {
+      state.loading.introspections = false
+      state.error = action.error.message || 'Failed to fetch introspections'
+    })
+
+    // fetchTrendData
+    builder.addCase(fetchTrendData.pending, (state) => {
+      state.loading.trends = true
+      state.error = null
+    })
+    builder.addCase(fetchTrendData.fulfilled, (state, action) => {
+      state.loading.trends = false
+      state.trendData = action.payload
+    })
+    builder.addCase(fetchTrendData.rejected, (state, action) => {
+      state.loading.trends = false
+      state.error = action.error.message || 'Failed to fetch trend data'
+    })
+
+    // fetchCurrentStatus
+    builder.addCase(fetchCurrentStatus.pending, (state) => {
+      state.loading.status = true
+      state.error = null
+    })
+    builder.addCase(fetchCurrentStatus.fulfilled, (state, action) => {
+      state.loading.status = false
+      state.currentStatus = action.payload
+    })
+    builder.addCase(fetchCurrentStatus.rejected, (state, action) => {
+      state.loading.status = false
+      state.error = action.error.message || 'Failed to fetch current status'
+    })
+
+    // addIntrospectionThunk
+    builder.addCase(addIntrospectionThunk.fulfilled, (state, action) => {
+      state.data.unshift(action.payload)
+    })
+
+    // updateIntrospectionThunk
+    builder.addCase(updateIntrospectionThunk.fulfilled, (state, action) => {
+      const index = state.data.findIndex((e) => e.id === action.payload.id)
+      if (index !== -1) {
+        state.data[index] = action.payload
+      }
+    })
   }
 })
 

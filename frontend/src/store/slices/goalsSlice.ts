@@ -1,19 +1,64 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk,createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import { GoalProgress } from '../../types/introspection.types'
 
 interface GoalsState {
   goalProgressItems: GoalProgress[]
+  loading: boolean
+  error: string | null
 }
 
 const initialState: GoalsState = {
-  goalProgressItems: [
-    { label: '朝の運動', value: 70, maxValue: 100, color: '#4CAF50' },
-    { label: '読書習慣', value: 50, maxValue: 100, color: '#5C73E6' },
-    { label: '瞑想', value: 25, maxValue: 100, color: '#FFD54F' },
-    { label: 'タスク管理の改善', value: 40, maxValue: 100, color: '#FF7878' }
-  ]
+  goalProgressItems: [],
+  loading: false,
+  error: null
 }
+
+// 非同期アクション
+export const fetchGoalProgress = createAsyncThunk(
+  'goals/fetchGoalProgress',
+  async () => {
+    const response = await fetch('/api/goals/progress')
+    if (!response.ok) {
+      throw new Error('Failed to fetch goal progress')
+    }
+    return (await response.json()) as GoalProgress[]
+  }
+)
+
+export const updateGoalProgressThunk = createAsyncThunk(
+  'goals/updateGoalProgressThunk',
+  async (goals: GoalProgress[]) => {
+    const response = await fetch('/api/goals/progress', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(goals)
+    })
+    if (!response.ok) {
+      throw new Error('Failed to update goal progress')
+    }
+    return (await response.json()) as GoalProgress[]
+  }
+)
+
+export const updateSingleGoalThunk = createAsyncThunk(
+  'goals/updateSingleGoalThunk',
+  async ({ index, value }: { index: number; value: number }) => {
+    const response = await fetch(`/api/goals/progress/${index}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ value })
+    })
+    if (!response.ok) {
+      throw new Error('Failed to update goal')
+    }
+    return (await response.json()) as { index: number; value: number }
+  }
+)
 
 const goalsSlice = createSlice({
   name: 'goals',
@@ -31,6 +76,34 @@ const goalsSlice = createSlice({
         state.goalProgressItems[index].value = value
       }
     }
+  },
+  extraReducers: (builder) => {
+    // fetchGoalProgress
+    builder.addCase(fetchGoalProgress.pending, (state) => {
+      state.loading = true
+      state.error = null
+    })
+    builder.addCase(fetchGoalProgress.fulfilled, (state, action) => {
+      state.loading = false
+      state.goalProgressItems = action.payload
+    })
+    builder.addCase(fetchGoalProgress.rejected, (state, action) => {
+      state.loading = false
+      state.error = action.error.message || 'Failed to fetch goal progress'
+    })
+
+    // updateGoalProgressThunk
+    builder.addCase(updateGoalProgressThunk.fulfilled, (state, action) => {
+      state.goalProgressItems = action.payload
+    })
+
+    // updateSingleGoalThunk
+    builder.addCase(updateSingleGoalThunk.fulfilled, (state, action) => {
+      const { index, value } = action.payload
+      if (index >= 0 && index < state.goalProgressItems.length) {
+        state.goalProgressItems[index].value = value
+      }
+    })
   }
 })
 
