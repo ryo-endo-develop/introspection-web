@@ -3,7 +3,8 @@ import { http, HttpResponse } from 'msw'
 import {
   ZodGoalProgress,
   ZodIntrospectionData,
-  ZodTrendData
+  ZodTrendData,
+  ZodUserData
 } from '../schemas/validationSchemas'
 
 // モックデータ
@@ -35,17 +36,17 @@ const introspectionData: ZodIntrospectionData[] = [
 ]
 
 const trendData: ZodTrendData[] = [
-  { date: '2025-03-01', mental: 3, physical: 4 },
-  { date: '2025-03-05', mental: 2, physical: 3 },
-  { date: '2025-03-10', mental: 3, physical: 3 },
-  { date: '2025-03-15', mental: 3, physical: 3 },
-  { date: '2025-03-20', mental: 3, physical: 3 },
-  { date: '2025-03-23', mental: 3, physical: 4 }
+  { date: '2025-03-01', mental: 3.5, physical: 4.0 },
+  { date: '2025-03-05', mental: 2.8, physical: 3.2 },
+  { date: '2025-03-10', mental: 3.2, physical: 3.8 },
+  { date: '2025-03-15', mental: 3.5, physical: 3.2 },
+  { date: '2025-03-20', mental: 3.0, physical: 3.8 },
+  { date: '2025-03-23', mental: 3.4, physical: 4.3 }
 ]
 
 const currentStatus = {
-  physical: 3,
-  mental: 3
+  physical: 3.8,
+  mental: 3.5
 }
 
 const goalProgressItems: ZodGoalProgress[] = [
@@ -55,10 +56,15 @@ const goalProgressItems: ZodGoalProgress[] = [
   { label: 'タスク管理の改善', value: 40, maxValue: 100, color: '#FF7878' }
 ]
 
-const userMockData = {
+const userMockData: ZodUserData = {
   id: 'mock-user-id',
   name: 'Demo User',
   email: 'demo@example.com'
+}
+
+// リクエストのための型定義
+interface GoalUpdateRequest {
+  value: number
 }
 
 // APIエンドポイントハンドラー
@@ -106,7 +112,7 @@ export const handlers = [
   // Goal 個別更新
   http.put('/api/goals/progress/:index', async ({ request, params }) => {
     const { index } = params
-    const { value } = (await request.json()) as { value: number }
+    const { value } = (await request.json()) as GoalUpdateRequest
 
     return HttpResponse.json({ index: Number(index), value })
   }),
