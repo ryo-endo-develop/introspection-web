@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import { ZodGoalProgress } from '../../../schemas/validationSchemas'
 import { RootState } from '../../../store'
 import { updateGoalProgress } from '../../../store/slices/goalsSlice'
-import { GoalProgress } from '../../../types/introspection.types'
 import { Button } from '../../atoms/Button/Button'
 import { Card, CardBody, CardHeader } from '../../atoms/Card/Card'
 import { Slider } from '../../atoms/Slider/Slider'
@@ -42,7 +42,7 @@ export const GoalProgressForm: React.FC<GoalProgressFormProps> = ({
       ]
   )
 
-  const [goals, setGoals] = useState<GoalProgress[]>(goalProgressItems)
+  const [goals, setGoals] = useState<ZodGoalProgress[]>(goalProgressItems)
   const dispatch = useDispatch()
 
   const handleSliderChange = (index: number, newValue: number) => {

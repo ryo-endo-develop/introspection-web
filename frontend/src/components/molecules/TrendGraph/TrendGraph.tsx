@@ -14,7 +14,7 @@ import {
   ValueType
 } from 'recharts/types/component/DefaultTooltipContent'
 
-import { TrendData } from '../../../types/introspection.types'
+import { ZodTrendData } from '../../../schemas/validationSchemas'
 import { Text } from '../../atoms/Text/Text'
 import {
   container,
@@ -25,7 +25,7 @@ import {
 } from './TrendGraph.css'
 
 interface TrendGraphProps {
-  data: TrendData[]
+  data: ZodTrendData[]
   className?: string
   height?: number | string
 }

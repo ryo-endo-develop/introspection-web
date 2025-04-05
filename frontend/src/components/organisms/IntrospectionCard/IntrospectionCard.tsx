@@ -1,9 +1,9 @@
 import React from 'react'
 
 import {
-  IntrospectionData,
-  StatusRating
-} from '../../../types/introspection.types'
+  ZodIntrospectionData,
+  ZodStatusRating
+} from '../../../schemas/validationSchemas'
 import { Text } from '../../atoms/Text/Text'
 import {
   container,
@@ -18,7 +18,7 @@ import {
 } from './IntrospectionCard.css'
 
 interface IntrospectionCardProps {
-  introspection: IntrospectionData
+  introspection: ZodIntrospectionData
   className?: string
 }
 
@@ -26,7 +26,7 @@ export const IntrospectionCard: React.FC<IntrospectionCardProps> = ({
   introspection,
   className = ''
 }) => {
-  const getRatingClassName = (rating: StatusRating) => {
+  const getRatingClassName = (rating: ZodStatusRating) => {
     switch (rating) {
       case 1:
         return rating1

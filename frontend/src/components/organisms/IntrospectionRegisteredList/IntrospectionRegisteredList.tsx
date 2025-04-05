@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { IntrospectionData } from '../../../types/introspection.types'
+import { ZodIntrospectionData } from '../../../schemas/validationSchemas'
 import { Card, CardBody, CardHeader } from '../../atoms/Card/Card'
 import { Heading } from '../../atoms/Heading/Heading'
 import { Text } from '../../atoms/Text/Text'
@@ -9,7 +9,7 @@ import { pagination } from './IntrospectionRegisteredList.css'
 
 interface IntrospectionRegisteredListProps {
   title: string
-  data: IntrospectionData[]
+  data: ZodIntrospectionData[]
   currentPage: number
   total: number
   pageSize: number

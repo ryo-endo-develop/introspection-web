@@ -82,3 +82,4 @@ export type ZodGoalProgress = z.infer<typeof GoalProgressSchema>
 export type ZodUserData = z.infer<typeof UserDataSchema>
 export type ZodLoginCredentials = z.infer<typeof LoginCredentialsSchema>
 export type ZodCurrentStatus = z.infer<typeof CurrentStatusSchema>
+export type ZodStatusRating = z.infer<typeof StatusRatingSchema>

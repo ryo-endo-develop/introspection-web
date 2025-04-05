@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 
-import { addIntrospection } from '../../../store/slices/introspectionsSlice'
 import {
-  IntrospectionData,
-  StatusRating
-} from '../../../types/introspection.types'
+  ZodIntrospectionData,
+  ZodStatusRating
+} from '../../../schemas/validationSchemas'
+import { addIntrospection } from '../../../store/slices/introspectionsSlice'
 import { Button } from '../../atoms/Button/Button'
 import { Card, CardBody, CardHeader } from '../../atoms/Card/Card'
 import { TextArea } from '../../atoms/TextArea/TextArea'
@@ -29,8 +29,8 @@ const initialFormState = {
   improvements: '',
   nextSteps: '',
   status: {
-    mental: 3 as StatusRating,
-    physical: 3 as StatusRating
+    mental: 3 as ZodStatusRating,
+    physical: 3 as ZodStatusRating
   }
 }
 
@@ -73,7 +73,7 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
 
   const handleRatingChange = (
     type: 'mental' | 'physical',
-    value: StatusRating
+    value: ZodStatusRating
   ) => {
     setFormData({
       ...formData,
@@ -86,7 +86,7 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
 
     const currentDate = new Date().toISOString().split('T')[0]
 
-    const newIntrospection: IntrospectionData = {
+    const newIntrospection: ZodIntrospectionData = {
       id: `entry-${Date.now()}`,
       date: currentDate,
       title: formData.title || `${currentDate}の振り返り`,
@@ -102,14 +102,14 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
 
   const renderRatingButtons = (
     type: 'mental' | 'physical',
-    currentValue: StatusRating
+    currentValue: ZodStatusRating
   ) => {
     return [1, 2, 3, 4, 5].map((value) => (
       <button
         key={`${type}-${value}`}
         type="button"
         className={`${ratingButton} ${value === currentValue ? ratingButtonSelected : ''}`}
-        onClick={() => handleRatingChange(type, value as StatusRating)}
+        onClick={() => handleRatingChange(type, value as ZodStatusRating)}
         aria-label={`評価 ${value}`}
         aria-pressed={value === currentValue}
       >
