@@ -25,28 +25,11 @@ async function initializeMSW() {
           '❌ mockServiceWorker.js not found! Status:',
           swResponse.status
         )
-        console.log('📝 Run `npx msw init public/ --save` to generate it')
         return
       }
 
       const { setupMockServiceWorker } = await import('./mocks/setup')
       await setupMockServiceWorker()
-
-      console.log(
-        '%c✅ MSW started in development mode!',
-        'color: green; font-weight: bold; font-size: 14px'
-      )
-
-      // テストリクエストでMSWの動作確認
-      console.log('🔍 Testing MSW with a fetch request...')
-      try {
-        const testResponse = await fetch('/api/status/current')
-        console.log('Test response status:', testResponse.status)
-        const data = await testResponse.json()
-        console.log('Test data:', data)
-      } catch (err) {
-        console.error('❌ Test request failed:', err)
-      }
     } catch (err) {
       console.error('❌ Failed to initialize MSW:', err)
     }

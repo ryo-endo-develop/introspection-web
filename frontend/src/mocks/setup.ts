@@ -15,7 +15,6 @@ export async function setupMockServiceWorker(): Promise<void> {
   // リクエストのインターセプトをログに残す
   const originalUse = worker.use.bind(worker)
   worker.use = function (...handlers) {
-    console.log('🔄 MSW: Registering handlers:', handlers.length)
     return originalUse(...handlers)
   }
 

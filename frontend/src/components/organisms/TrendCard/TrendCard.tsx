@@ -1,13 +1,13 @@
 import React from 'react'
 
-import { TrendData } from '../../../types/introspection.types'
+import { ZodTrendData } from '../../../schemas/validationSchemas'
 import { Card, CardBody, CardHeader } from '../../atoms/Card/Card'
 import { Heading } from '../../atoms/Heading/Heading'
 import { TrendGraph } from '../../molecules/TrendGraph/TrendGraph'
 
 interface TrendCardProps {
   title: string
-  data: TrendData[]
+  data: ZodTrendData[]
   className?: string
 }
 
