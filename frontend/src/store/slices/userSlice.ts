@@ -5,7 +5,8 @@ import {
   LoginResponseSchema,
   UserDataSchema,
   ZodLoginCredentials,
-  ZodUserData} from '../../schemas/validationSchemas'
+  ZodUserData
+} from '../../schemas/validationSchemas'
 
 interface UserState {
   id: string | null
@@ -20,7 +21,7 @@ const initialState: UserState = {
   id: null,
   name: null,
   email: null,
-  isAuthenticated: false,
+  isAuthenticated: true, //FIXME boolean
   loading: false,
   error: null
 }

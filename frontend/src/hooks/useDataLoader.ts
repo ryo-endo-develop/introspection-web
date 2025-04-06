@@ -19,10 +19,10 @@ export const useDataLoader = () => {
     if (isAuthenticated) {
       const fetchData = async () => {
         try {
-          await dispatch(fetchIntrospections()).unwrap()
-          await dispatch(fetchTrendData()).unwrap()
+          // await dispatch(fetchIntrospections()).unwrap()
+          // await dispatch(fetchTrendData()).unwrap()
           await dispatch(fetchCurrentStatus()).unwrap()
-          await dispatch(fetchGoalProgress()).unwrap()
+          // await dispatch(fetchGoalProgress()).unwrap()
         } catch (err) {
           // Zodによるバリデーションエラーを含むエラー処理
           const errorMessage =
@@ -50,6 +50,7 @@ export const useDataLoader = () => {
           err instanceof Error
             ? err.message
             : 'ユーザー情報取得時にエラーが発生しました'
+        console.log(err)
         console.error('ユーザー情報取得時にエラー:', errorMessage)
 
         // UIにエラーを表示（react-toastifyを使用する場合）

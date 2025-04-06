@@ -89,7 +89,6 @@ export const fetchCurrentStatus = createAsyncThunk<ZodCurrentStatus>(
     }
 
     const data = await response.json()
-
     // Zodによるバリデーション
     const result = CurrentStatusSchema.safeParse(data)
     if (!result.success) {

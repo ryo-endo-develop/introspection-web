@@ -36,17 +36,17 @@ const introspectionData: ZodIntrospectionData[] = [
 ]
 
 const trendData: ZodTrendData[] = [
-  { date: '2025-03-01', mental: 3.5, physical: 4.0 },
-  { date: '2025-03-05', mental: 2.8, physical: 3.2 },
-  { date: '2025-03-10', mental: 3.2, physical: 3.8 },
-  { date: '2025-03-15', mental: 3.5, physical: 3.2 },
-  { date: '2025-03-20', mental: 3.0, physical: 3.8 },
-  { date: '2025-03-23', mental: 3.4, physical: 4.3 }
+  { date: '2025-03-01', mental: 3, physical: 4 },
+  { date: '2025-03-05', mental: 2, physical: 3 },
+  { date: '2025-03-10', mental: 3, physical: 3 },
+  { date: '2025-03-15', mental: 3, physical: 3 },
+  { date: '2025-03-20', mental: 3, physical: 3 },
+  { date: '2025-03-23', mental: 3, physical: 4 }
 ]
 
 const currentStatus = {
-  physical: 3.8,
-  mental: 3.5
+  physical: 3,
+  mental: 3
 }
 
 const goalProgressItems: ZodGoalProgress[] = [
@@ -81,6 +81,7 @@ export const handlers = [
 
   // Current Status 取得
   http.get('/api/status/current', () => {
+    console.log('start')
     return HttpResponse.json(currentStatus)
   }),
 
