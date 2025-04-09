@@ -1,3 +1,12 @@
+# アプリ起動
+
+## clone直後
+
+```shell
+npm install
+npm run generate:api
+```
+
 # Linter
 
 ## 開発前のチェック

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run generate:api && tsc -b && vite build",
     "lint": "run-s lint:*",
     "lint:eslint": "eslint . --ext .ts,.tsx",
     "lint:types": "tsc --noEmit",
