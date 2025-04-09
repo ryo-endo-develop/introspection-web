@@ -487,7 +487,7 @@ components:
         status:
           type: integer
           format: int32
-          description: HTTPステータスコード (成功時: 200, 201など)
+          description: HTTPステータスコード (成功時 200, 201など)
           example: 200
       required:
         - status
@@ -497,7 +497,7 @@ components:
         status:
           type: integer
           format: int32
-          description: HTTPステータスコード (エラー時: 4xx, 5xx)
+          description: HTTPステータスコード (エラー時 4xx, 5xx)
           example: 400
         message:
           type: string
@@ -517,7 +517,14 @@ components:
         - message
 
     # --- Data Models ---
-    StatusRating: { type: integer, format: int32, enum: [1, 2, 3, 4, 5], description: 1から5の評価値, example: 4 }
+    StatusRating:
+      {
+        type: integer,
+        format: int32,
+        enum: [1, 2, 3, 4, 5],
+        description: 1から5の評価値,
+        example: 4
+      }
     Status:
       type: object
       properties:
@@ -527,7 +534,13 @@ components:
     IntrospectionData:
       type: object
       properties:
-        id: { type: string, format: uuid, readOnly: true, example: 'd290f1ee-6c54-4b01-90e6-d701748f0851' }
+        id:
+          {
+            type: string,
+            format: uuid,
+            readOnly: true,
+            example: 'd290f1ee-6c54-4b01-90e6-d701748f0851'
+          }
         date: { type: string, format: date, example: '2025-03-22' }
         title: { type: string, minLength: 1, example: '新しいプロジェクト計画' }
         activities: { type: string, example: '目標設定が明確にできた' }
@@ -578,15 +591,32 @@ components:
     # --- Input Schemas ---
     IntrospectionCreateInput:
       type: object
-      properties: { date: { type: string, format: date }, title: { type: string, minLength: 1 }, activities: { type: string }, improvements: { type: string }, nextSteps: { type: string }, status: { $ref: '#/components/schemas/Status' } }
+      properties:
+        {
+          date: { type: string, format: date },
+          title: { type: string, minLength: 1 },
+          activities: { type: string },
+          improvements: { type: string },
+          nextSteps: { type: string },
+          status: { $ref: '#/components/schemas/Status' }
+        }
       required: [date, title, activities, improvements, nextSteps, status]
     IntrospectionUpdateInput:
       type: object
-      properties: { date: { type: string, format: date }, title: { type: string, minLength: 1 }, activities: { type: string }, improvements: { type: string }, nextSteps: { type: string }, status: { $ref: '#/components/schemas/Status' } }
+      properties:
+        {
+          date: { type: string, format: date },
+          title: { type: string, minLength: 1 },
+          activities: { type: string },
+          improvements: { type: string },
+          nextSteps: { type: string },
+          status: { $ref: '#/components/schemas/Status' }
+        }
       required: [date, title, activities, improvements, nextSteps, status]
     GoalProgressUpdateInput:
       type: object
-      properties: { id: { type: string }, value: { type: number, format: int32 } }
+      properties:
+        { id: { type: string }, value: { type: number, format: int32 } }
       required: [id, value]
     SingleGoalValueUpdateInput:
       type: object
@@ -594,7 +624,11 @@ components:
       required: [value]
     LoginCredentials:
       type: object
-      properties: { email: { type: string, format: email }, password: { type: string, format: password, minLength: 8 } }
+      properties:
+        {
+          email: { type: string, format: email },
+          password: { type: string, format: password, minLength: 8 }
+        }
       required: [email, password]
 
     # --- Response Wrapper Schemas (Success, data is always array) ---
@@ -636,45 +670,108 @@ components:
         - $ref: '#/components/schemas/SuccessDataArrayResponseBase'
         - type: object
           properties:
-            data: { items: { $ref: '#/components/schemas/GoalProgress' }, maxItems: 1 } # maxItems is informational
+            data: {
+                items: { $ref: '#/components/schemas/GoalProgress' },
+                maxItems: 1
+              } # maxItems is informational
     IntrospectionSingleItemResponse:
       allOf:
         - $ref: '#/components/schemas/SuccessDataArrayResponseBase'
         - type: object
           properties:
-            data: { items: { $ref: '#/components/schemas/IntrospectionData' }, maxItems: 1 }
+            data:
+              {
+                items: { $ref: '#/components/schemas/IntrospectionData' },
+                maxItems: 1
+              }
     CurrentStatusSingleItemResponse:
       allOf:
         - $ref: '#/components/schemas/SuccessDataArrayResponseBase'
         - type: object
           properties:
-            data: { items: { $ref: '#/components/schemas/CurrentStatus' }, maxItems: 1 }
+            data:
+              {
+                items: { $ref: '#/components/schemas/CurrentStatus' },
+                maxItems: 1
+              }
     UserDataSingleItemResponse:
       allOf:
         - $ref: '#/components/schemas/SuccessDataArrayResponseBase'
         - type: object
           properties:
-            data: { items: { $ref: '#/components/schemas/UserData' }, maxItems: 1 }
+            data:
+              { items: { $ref: '#/components/schemas/UserData' }, maxItems: 1 }
     LoginSuccessResponse: # Login returns JWT + User
       allOf:
         - $ref: '#/components/schemas/SuccessDataArrayResponseBase'
         - type: object
           properties:
-            data: { items: { $ref: '#/components/schemas/LoginResult' }, maxItems: 1 } # LoginResult参照に変更
+            data: {
+                items: { $ref: '#/components/schemas/LoginResult' },
+                maxItems: 1
+              } # LoginResult参照に変更
 
   responses: # Common Error Responses
     BadRequest:
       description: リクエスト不正 (バリデーションエラーなど)
-      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' }, example: { status: 400, message: '入力形式が正しくありません。', code: 'INVALID_INPUT' } } }
+      content:
+        {
+          application/json:
+            {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+              example:
+                {
+                  status: 400,
+                  message: '入力形式が正しくありません。',
+                  code: 'INVALID_INPUT'
+                }
+            }
+        }
     Unauthorized:
       description: 認証エラー (トークン無効/無し/権限不足など)
-      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' }, example: { status: 401, message: '認証トークンが必要です、または無効です。', code: 'UNAUTHORIZED' } } }
+      content:
+        {
+          application/json:
+            {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+              example:
+                {
+                  status: 401,
+                  message: '認証トークンが必要です、または無効です。',
+                  code: 'UNAUTHORIZED'
+                }
+            }
+        }
     NotFound:
       description: リソースが見つからない
-      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' }, example: { status: 404, message: '要求されたリソースが見つかりません。', code: 'NOT_FOUND' } } }
+      content:
+        {
+          application/json:
+            {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+              example:
+                {
+                  status: 404,
+                  message: '要求されたリソースが見つかりません。',
+                  code: 'NOT_FOUND'
+                }
+            }
+        }
     InternalServerError:
       description: サーバー内部エラー
-      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' }, example: { status: 500, message: 'サーバー内部でエラーが発生しました。', code: 'INTERNAL_SERVER_ERROR' } } }
+      content:
+        {
+          application/json:
+            {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+              example:
+                {
+                  status: 500,
+                  message: 'サーバー内部でエラーが発生しました。',
+                  code: 'INTERNAL_SERVER_ERROR'
+                }
+            }
+        }
 
   securitySchemes:
     bearerAuth: # JWT Bearer Authentication
