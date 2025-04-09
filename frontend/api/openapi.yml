@@ -2,11 +2,17 @@ openapi: 3.0.0
 info:
   title: Introspection Web API
   version: 1.0.0
-  description: フロントエンド開発用に仮定義したAPI仕様 (storeディレクトリのコードから生成)
+  description: |-
+    自己分析と目標進捗管理のためのWeb API仕様。
+    フロントエンド開発を先行し、この仕様に基づいてバックエンドを開発する想定。
+    認証方式はOIDC/JWT (Bearer認証) を想定。
+    成功レスポンスの `data` フィールドは常に配列。
 
 servers:
-  - url: http://localhost:5137 # 開発用プロキシやMSWのベースURL (環境に合わせて変更)
-    description: Development server
+  - url: http://localhost:5137 # MSWや開発用プロキシのベースURL (環境に合わせて変更)
+    description: Local development server (MSW or Proxy)
+  # - url: https://api.example.com/v1 # 本番環境などのURL例
+  #   description: Production server
 
 tags:
   - name: Goals
@@ -23,74 +29,125 @@ paths:
   /api/goals/progress:
     get:
       summary: 目標進捗リストを取得
-      operationId: fetchGoalProgress
+      operationId: getGoalProgressList
       tags: [Goals]
+      security:
+        - bearerAuth: [] # 認証方式変更
       responses:
         '200':
-          description: 成功
+          description: 目標進捗リストの取得成功
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/GoalProgress'
+                $ref: '#/components/schemas/GoalProgressListResponse'
+              example:
+                status: 200
+                data:
+                  - id: 'goal-1'
+                    label: 朝の運動
+                    value: 70
+                    maxValue: 100
+                    color: '#4CAF50'
+                  - id: 'goal-2'
+                    label: 読書習慣
+                    value: 50
+                    maxValue: 100
+                    color: '#5C73E6'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
-          $ref: '#/components/responses/InternalServerError' # 共通エラーレスポンス
+          $ref: '#/components/responses/InternalServerError'
     put:
-      summary: 目標進捗リストを更新
-      operationId: updateGoalProgress
+      summary: 目標進捗リストを一括更新
+      operationId: updateGoalProgressList
       tags: [Goals]
+      security:
+        - bearerAuth: [] # 認証方式変更
       requestBody:
+        description: 更新する目標進捗のリスト (IDで対象を指定)
         required: true
         content:
           application/json:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/GoalProgress'
+                $ref: '#/components/schemas/GoalProgressUpdateInput'
+            example:
+              - id: 'goal-1'
+                value: 80
+              - id: 'goal-2'
+                value: 60
       responses:
         '200':
-          description: 更新成功 (更新後のリスト)
+          description: 目標進捗リストの更新成功 (更新後のリストを返す)
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/GoalProgress'
+                $ref: '#/components/schemas/GoalProgressListResponse' # dataは配列
+              example:
+                status: 200
+                data:
+                  - id: 'goal-1'
+                    label: 朝の運動
+                    value: 80
+                    maxValue: 100
+                    color: '#4CAF50'
+                  - id: 'goal-2'
+                    label: 読書習慣
+                    value: 60
+                    maxValue: 100
+                    color: '#5C73E6'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /api/goals/progress/{index}:
-    parameters: # パスパラメータ定義
-      - name: index
+  /api/goals/progress/{goalId}:
+    parameters:
+      - name: goalId
         in: path
         required: true
-        description: 更新対象の目標のインデックス (0始まり)
+        description: 更新対象の目標ID
         schema:
-          type: integer
-          format: int32
-          minimum: 0
+          type: string
+          format: uuid
+        example: 'goal-1'
     put:
       summary: 特定の目標進捗を更新
-      operationId: updateSingleGoal
+      operationId: updateSingleGoalProgress
       tags: [Goals]
+      security:
+        - bearerAuth: [] # 認証方式変更
       requestBody:
+        description: 更新する目標の値
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SingleGoalUpdateRequest'
+              $ref: '#/components/schemas/SingleGoalValueUpdateInput'
+            example:
+              value: 90
       responses:
         '200':
-          description: 更新成功 (更新結果)
+          description: 特定目標の更新成功 (更新後の目標データを返す)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SingleGoalUpdateResponse'
+                $ref: '#/components/schemas/GoalProgressSingleItemResponse' # dataは配列(要素1)
+              example:
+                status: 200
+                data: # 配列でラップ
+                  - id: 'goal-1'
+                    label: 朝の運動
+                    value: 90
+                    maxValue: 100
+                    color: '#4CAF50'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -100,133 +157,245 @@ paths:
   /api/introspections:
     get:
       summary: 自己分析リストを取得
-      operationId: fetchIntrospections
+      operationId: getIntrospectionList
       tags: [Introspections]
+      security:
+        - bearerAuth: [] # 認証方式変更
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 10 }
+        # 他のフィルタ条件 (例: dateFrom, dateTo) も追加可能
       responses:
         '200':
-          description: 成功
+          description: 自己分析リストの取得成功
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/IntrospectionData'
+                $ref: '#/components/schemas/IntrospectionListResponse' # dataは配列
+              example:
+                status: 200
+                data:
+                  - id: 'd290f1ee-6c54-4b01-90e6-d701748f0851'
+                    # ... (IntrospectionData)
+                  - id: '550e8400-e29b-41d4-a716-446655440000'
+                    # ... (IntrospectionData)
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
       summary: 新しい自己分析を追加
       operationId: addIntrospection
       tags: [Introspections]
+      security:
+        - bearerAuth: [] # 認証方式変更
       requestBody:
+        description: 追加する自己分析データ
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateIntrospectionRequest' # IDを含まないスキーマ
+              $ref: '#/components/schemas/IntrospectionCreateInput'
+            example:
+              date: '2025-04-09'
+              title: '今日の振り返り'
+              # ... (省略)
       responses:
-        '201': # 作成成功は 201 Created
-          description: 作成成功 (作成されたデータ)
+        '201':
+          description: 自己分析の追加成功 (作成されたデータを返す)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IntrospectionData' # IDを含むスキーマ
+                $ref: '#/components/schemas/IntrospectionSingleItemResponse' # dataは配列(要素1)
+              example:
+                status: 201
+                data: # 配列でラップ
+                  - id: 'new-generated-uuid'
+                    date: '2025-04-09'
+                    title: '今日の振り返り'
+                    # ... (省略)
         '400':
           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /api/introspections/{id}:
+  /api/introspections/{introspectionId}:
     parameters:
-      - name: id
+      - name: introspectionId
         in: path
         required: true
-        description: 更新対象の自己分析ID
+        description: 対象の自己分析ID
         schema:
           type: string
-          format: uuid # もしUUIDなら
-    put:
-      summary: 特定の自己分析を更新
-      operationId: updateIntrospection
+          format: uuid
+        example: 'd290f1ee-6c54-4b01-90e6-d701748f0851'
+    get:
+      summary: 特定の自己分析を取得
+      operationId: getIntrospectionById
       tags: [Introspections]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/IntrospectionData' # 更新時はIDも含む
+      security:
+        - bearerAuth: [] # 認証方式変更
       responses:
         '200':
-          description: 更新成功 (更新後のデータ)
+          description: 特定の自己分析データの取得成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IntrospectionData'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+                $ref: '#/components/schemas/IntrospectionSingleItemResponse' # dataは配列(要素1)
+              example:
+                status: 200
+                data: # 配列でラップ
+                  - id: 'd290f1ee-6c54-4b01-90e6-d701748f0851'
+                    # ... (IntrospectionData)
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
-    # delete も必要になるかもしれないのでコメントアウトで残しておく
-    # delete:
-    #   summary: 特定の自己分析を削除
-    #   operationId: deleteIntrospection
-    #   tags: [Introspections]
-    #   responses:
-    #     '204': # 成功時は本文なし
-    #       description: 削除成功
-    #     '404':
-    #       $ref: '#/components/responses/NotFound'
-    #     '500':
-    #       $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: 特定の自己分析を更新
+      operationId: updateIntrospection
+      tags: [Introspections]
+      security:
+        - bearerAuth: [] # 認証方式変更
+      requestBody:
+        description: 更新する自己分析データ
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IntrospectionUpdateInput'
+            example:
+              date: '2025-03-22'
+              title: '新しいプロジェクト計画 (更新)'
+              # ... (省略)
+      responses:
+        '200':
+          description: 自己分析の更新成功 (更新後のデータを返す)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntrospectionSingleItemResponse' # dataは配列(要素1)
+              example:
+                status: 200
+                data: # 配列でラップ
+                  - id: 'd290f1ee-6c54-4b01-90e6-d701748f0851'
+                    date: '2025-03-22'
+                    title: '新しいプロジェクト計画 (更新)'
+                    # ... (省略)
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: 特定の自己分析を削除
+      operationId: deleteIntrospection
+      tags: [Introspections]
+      security:
+        - bearerAuth: [] # 認証方式変更
+      responses:
+        '204': # 成功時は No Content
+          description: 自己分析の削除成功 (レスポンスボディなし)
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /api/trends:
     get:
       summary: トレンドデータを取得
-      operationId: fetchTrends
-      tags: [Introspections] # Introspection関連なので同じタグに
+      operationId: getTrendData
+      tags: [Introspections]
+      security:
+        - bearerAuth: [] # 認証方式変更
+      parameters:
+        - name: from
+          in: query
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          schema: { type: string, format: date }
       responses:
         '200':
-          description: 成功
+          description: トレンドデータの取得成功
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TrendData'
+                $ref: '#/components/schemas/TrendDataListResponse' # dataは配列
+              example:
+                status: 200
+                data:
+                  - date: '2025-03-15'
+                    mental: 3.5
+                    physical: 4.2
+                  - date: '2025-03-22'
+                    mental: 4.0
+                    physical: 3.8
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
   /api/status/current:
     get:
       summary: 現在のステータスを取得
-      operationId: fetchCurrentStatus
+      operationId: getCurrentStatus
       tags: [Introspections]
+      security:
+        - bearerAuth: [] # 認証方式変更
       responses:
         '200':
-          description: 成功
+          description: 現在のステータスの取得成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CurrentStatus'
+                $ref: '#/components/schemas/CurrentStatusSingleItemResponse' # dataは配列(要素1)
+              example:
+                status: 200
+                data: # 配列でラップ
+                  - physical: 4
+                    mental: 5
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404': # データがない場合など
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
   # --- User & Auth ---
-  /api/user:
+  /api/user: # または /api/users/me
     get:
-      summary: 現在のユーザー情報を取得
-      operationId: fetchUserData
+      summary: 現在の認証済みユーザー情報を取得
+      operationId: getCurrentUser
       tags: [User]
-      security: # 認証が必要なAPIであることを示す (任意)
-        - cookieAuth: [] # 下で定義するセキュリティスキーム
+      security:
+        - bearerAuth: [] # 認証方式変更, 必須
       responses:
         '200':
-          description: 成功
+          description: ユーザー情報の取得成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserData'
+                $ref: '#/components/schemas/UserDataSingleItemResponse' # dataは配列(要素1)
+              example:
+                status: 200
+                data: # 配列でラップ
+                  - id: 'mock-user-id'
+                    name: 'Demo User'
+                    email: 'demo@example.com'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':
@@ -234,293 +403,284 @@ paths:
 
   /api/auth/login:
     post:
-      summary: ログイン
+      summary: メールアドレスとパスワードでログイン (JWTを返す想定)
       operationId: login
       tags: [Auth]
       requestBody:
+        description: ログイン認証情報
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/LoginCredentials'
+            example:
+              email: 'demo@example.com'
+              password: 'password123'
       responses:
         '200':
-          description: ログイン成功
+          description: ログイン成功 (JWT とユーザー情報を返す)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginResponse'
-        '400': # パスワード間違いなど
-          $ref: '#/components/responses/BadRequest'
-        '401': # 認証情報無効
-          $ref: '#/components/responses/Unauthorized'
+                $ref: '#/components/schemas/LoginSuccessResponse' # dataは配列(要素1)
+              example:
+                status: 200
+                data: # 配列でラップ
+                  - jwt: 'eyJhbGciOiJIUzI1NiIsIn...' # ★ JWTをレスポンスに含める形式に変更
+                    user:
+                      id: 'mock-user-id'
+                      name: 'Demo User'
+                      email: 'demo@example.com'
+        '400':
+          $ref: '#/components/responses/BadRequest' # 入力形式エラー
+        '401':
+          $ref: '#/components/responses/Unauthorized' # 認証情報間違い
         '500':
           $ref: '#/components/responses/InternalServerError'
 
   /api/auth/logout:
     post:
-      summary: ログアウト
+      summary: ログアウト (サーバー側でセッション/トークン無効化などを行う想定)
       operationId: logout
       tags: [Auth]
       security:
-        - cookieAuth: [] # 認証が必要な想定
+        - bearerAuth: [] # 認証方式変更, 必須
       responses:
-        '200':
+        '204': # 成功時は No Content, レスポンスボディなし
           description: ログアウト成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LogoutResponse'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          $ref: '#/components/responses/Unauthorized' # トークン無効など
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /api/auth/status: # userSliceのcheckAuthStatus用 (前回提案)
+  /api/auth/status: # セッション/トークンの有効性確認用API (オプション)
     get:
-      summary: 現在の認証状態を確認
+      summary: 現在の認証状態（トークン）を確認
       operationId: checkAuthStatus
       tags: [Auth]
       security:
-        - cookieAuth: [] # 認証情報を使って確認する想定
+        - bearerAuth: [] # 認証方式変更, 必須
       responses:
         '200':
-          description: 認証済み (ユーザー情報)
+          description: 認証済み（有効なトークンあり）, ユーザー情報を返す
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserData'
-        '401':
-          description: 未認証 (レスポンスボディは空かもしれない)
+                $ref: '#/components/schemas/UserDataSingleItemResponse' # dataは配列(要素1)
+              example:
+                status: 200
+                data: # 配列でラップ
+                  - id: 'mock-user-id'
+                    name: 'Demo User'
+                    email: 'demo@example.com'
+        '401': # トークンが無効または存在しない場合は Unauthorized
+          $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
 components:
   schemas:
-    # --- Goals Schemas ---
-    GoalProgress:
+    # --- Base Response Schemas ---
+    SuccessResponseBase:
       type: object
-      description: 目標進捗データ
-      required: [label, value, maxValue, color] # id は必須か不明瞭なので一旦外す
       properties:
-        id: # もしAPIがIDを扱うなら追加
-          type: string
-          format: uuid
-          readOnly: true # APIから返されるだけなら readOnly
-        label:
-          type: string
-          example: 朝の運動
-        value:
-          type: number
-          format: int32 # または float
-          example: 70
-        maxValue:
-          type: number
-          format: int32 # または float
-          example: 100
-        color:
-          type: string
-          format: hexcolor # OpenAPIに定義はないが説明として
-          example: '#4CAF50'
-    SingleGoalUpdateRequest:
-      type: object
-      description: 単一目標更新リクエスト
-      required: [value]
-      properties:
-        value:
-          type: number
-          format: int32
-          example: 80
-    SingleGoalUpdateResponse:
-      type: object
-      description: 単一目標更新レスポンス
-      required: [index, value]
-      properties:
-        index:
+        status:
           type: integer
           format: int32
-          example: 0
-        value:
-          type: number
+          description: HTTPステータスコード (成功時: 200, 201など)
+          example: 200
+      required:
+        - status
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
           format: int32
-          example: 80
-
-    # --- Introspections & Trends Schemas ---
-    StatusRating:
-      type: integer
-      format: int32
-      enum: [1, 2, 3, 4, 5]
-      description: 1から5の評価値
-    Status:
-      type: object
-      required: [physical, mental]
-      properties:
-        physical:
-          $ref: '#/components/schemas/StatusRating'
-        mental:
-          $ref: '#/components/schemas/StatusRating'
-    IntrospectionData:
-      type: object
-      description: 自己分析データ
-      required: [id, date, title, activities, improvements, nextSteps, status]
-      properties:
-        id:
-          type: string
-          format: uuid # または他の形式
-          readOnly: true # POSTでは不要、GET/PUTで存在
-          example: 'd290f1ee-6c54-4b01-90e6-d701748f0851'
-        date:
-          type: string
-          format: date # YYYY-MM-DD
-          example: '2025-03-22'
-        title:
-          type: string
-          minLength: 1
-          example: '新しいプロジェクト計画'
-        activities:
-          type: string
-          example: '目標設定が明確にできた'
-        improvements:
-          type: string
-          example: '時間配分がまだ甘い'
-        nextSteps:
-          type: string
-          example: '優先順位付けの新しい方法'
-        status:
-          $ref: '#/components/schemas/Status'
-    CreateIntrospectionRequest:
-      type: object
-      description: 自己分析作成リクエスト (IDなし)
-      required: [date, title, activities, improvements, nextSteps, status]
-      properties:
-        date:
-          type: string
-          format: date
-        title:
-          type: string
-          minLength: 1
-        activities:
-          type: string
-        improvements:
-          type: string
-        nextSteps:
-          type: string
-        status:
-          $ref: '#/components/schemas/Status'
-    TrendData:
-      type: object
-      description: トレンドデータ
-      required: [date, mental, physical]
-      properties:
-        date:
-          type: string
-          format: date
-        mental:
-          type: number
-          format: int32 # または float
-        physical:
-          type: number
-          format: int32 # または float
-    CurrentStatus:
-      type: object
-      description: 現在のステータス
-      required: [physical, mental]
-      properties:
-        physical:
-          type: number
-          format: int32 # または float
-        mental:
-          type: number
-          format: int32 # または float
-
-    # --- User & Auth Schemas ---
-    UserData:
-      type: object
-      description: ユーザー情報
-      required: [id, name, email]
-      properties:
-        id:
-          type: string
-          example: 'mock-user-id'
-        name:
-          type: string
-          example: 'Demo User'
-        email:
-          type: string
-          format: email
-          example: 'demo@example.com'
-    LoginCredentials:
-      type: object
-      description: ログイン情報
-      required: [email, password]
-      properties:
-        email:
-          type: string
-          format: email
-        password:
-          type: string
-          format: password # OpenAPI標準フォーマット
-          minLength: 8
-    LoginResponse:
-      type: object
-      description: ログイン成功レスポンス
-      required: [success, user]
-      properties:
-        success:
-          type: boolean
-          example: true
-        user:
-          $ref: '#/components/schemas/UserData'
-    LogoutResponse:
-      type: object
-      description: ログアウト成功レスポンス
-      required: [success]
-      properties:
-        success:
-          type: boolean
-          example: true
-
-    # --- Common Error Schema ---
-    Error:
-      type: object
-      required: [message]
-      properties:
+          description: HTTPステータスコード (エラー時: 4xx, 5xx)
+          example: 400
         message:
           type: string
-        code: # オプショナルでエラーコード
+          description: エラーメッセージ
+          example: 'Invalid input data'
+        code:
           type: string
-        details: # オプショナルで詳細情報
+          description: (オプション) アプリケーション固有のエラーコード
+          example: 'VALIDATION_ERROR'
+        details:
           type: object
           additionalProperties: true
+          description: (オプション) エラーの詳細情報
+          example: { field: 'email', reason: 'format is invalid' }
+      required:
+        - status
+        - message
 
-  responses: # 共通レスポンスを定義
+    # --- Data Models ---
+    StatusRating: { type: integer, format: int32, enum: [1, 2, 3, 4, 5], description: 1から5の評価値, example: 4 }
+    Status:
+      type: object
+      properties:
+        physical: { $ref: '#/components/schemas/StatusRating' }
+        mental: { $ref: '#/components/schemas/StatusRating' }
+      required: [physical, mental]
+    IntrospectionData:
+      type: object
+      properties:
+        id: { type: string, format: uuid, readOnly: true, example: 'd290f1ee-6c54-4b01-90e6-d701748f0851' }
+        date: { type: string, format: date, example: '2025-03-22' }
+        title: { type: string, minLength: 1, example: '新しいプロジェクト計画' }
+        activities: { type: string, example: '目標設定が明確にできた' }
+        improvements: { type: string, example: '時間配分がまだ甘い' }
+        nextSteps: { type: string, example: '優先順位付けの新しい方法を試す' }
+        status: { $ref: '#/components/schemas/Status' }
+      required: [id, date, title, activities, improvements, nextSteps, status]
+    TrendData:
+      type: object
+      properties:
+        date: { type: string, format: date }
+        mental: { type: number, format: float, example: 4.0 }
+        physical: { type: number, format: float, example: 3.8 }
+      required: [date, mental, physical]
+    CurrentStatus:
+      type: object
+      properties:
+        physical: { type: number, format: int32, example: 4 }
+        mental: { type: number, format: int32, example: 5 }
+      required: [physical, mental]
+    GoalProgress:
+      type: object
+      properties:
+        id: { type: string, format: uuid, readOnly: true, example: 'goal-1' }
+        label: { type: string, example: '朝の運動' }
+        value: { type: number, format: int32, example: 70 }
+        maxValue: { type: number, format: int32, example: 100 }
+        color: { type: string, example: '#4CAF50' }
+      required: [id, label, value, maxValue, color]
+    UserData:
+      type: object
+      properties:
+        id: { type: string, example: 'mock-user-id' }
+        name: { type: string, example: 'Demo User' }
+        email: { type: string, format: email, example: 'demo@example.com' }
+      required: [id, name, email]
+    LoginResult: # Login APIの data 配列の要素の中身 (JWT含む) ★変更
+      type: object
+      properties:
+        jwt: # ★JWTをレスポンスに含める形式に変更
+          type: string
+          description: 認証用JWT
+          example: 'eyJhbGciOiJIUzI1NiIsIn...'
+        user:
+          $ref: '#/components/schemas/UserData'
+      required: [jwt, user]
+
+    # --- Input Schemas ---
+    IntrospectionCreateInput:
+      type: object
+      properties: { date: { type: string, format: date }, title: { type: string, minLength: 1 }, activities: { type: string }, improvements: { type: string }, nextSteps: { type: string }, status: { $ref: '#/components/schemas/Status' } }
+      required: [date, title, activities, improvements, nextSteps, status]
+    IntrospectionUpdateInput:
+      type: object
+      properties: { date: { type: string, format: date }, title: { type: string, minLength: 1 }, activities: { type: string }, improvements: { type: string }, nextSteps: { type: string }, status: { $ref: '#/components/schemas/Status' } }
+      required: [date, title, activities, improvements, nextSteps, status]
+    GoalProgressUpdateInput:
+      type: object
+      properties: { id: { type: string }, value: { type: number, format: int32 } }
+      required: [id, value]
+    SingleGoalValueUpdateInput:
+      type: object
+      properties: { value: { type: number, format: int32 } }
+      required: [value]
+    LoginCredentials:
+      type: object
+      properties: { email: { type: string, format: email }, password: { type: string, format: password, minLength: 8 } }
+      required: [email, password]
+
+    # --- Response Wrapper Schemas (Success, data is always array) ---
+    # Base wrapper (inherits from SuccessResponseBase, adds data array)
+    SuccessDataArrayResponseBase:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResponseBase'
+        - type: object
+          properties:
+            data:
+              type: array
+              description: APIの結果データ (常に配列)
+              items: {} # Placeholder, overridden below
+          required: [data]
+
+    # List responses (multiple items expected in data array)
+    GoalProgressListResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessDataArrayResponseBase'
+        - type: object
+          properties:
+            data: { items: { $ref: '#/components/schemas/GoalProgress' } }
+    IntrospectionListResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessDataArrayResponseBase'
+        - type: object
+          properties:
+            data: { items: { $ref: '#/components/schemas/IntrospectionData' } }
+    TrendDataListResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessDataArrayResponseBase'
+        - type: object
+          properties:
+            data: { items: { $ref: '#/components/schemas/TrendData' } }
+
+    # Single item responses (0 or 1 item expected in data array)
+    GoalProgressSingleItemResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessDataArrayResponseBase'
+        - type: object
+          properties:
+            data: { items: { $ref: '#/components/schemas/GoalProgress' }, maxItems: 1 } # maxItems is informational
+    IntrospectionSingleItemResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessDataArrayResponseBase'
+        - type: object
+          properties:
+            data: { items: { $ref: '#/components/schemas/IntrospectionData' }, maxItems: 1 }
+    CurrentStatusSingleItemResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessDataArrayResponseBase'
+        - type: object
+          properties:
+            data: { items: { $ref: '#/components/schemas/CurrentStatus' }, maxItems: 1 }
+    UserDataSingleItemResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessDataArrayResponseBase'
+        - type: object
+          properties:
+            data: { items: { $ref: '#/components/schemas/UserData' }, maxItems: 1 }
+    LoginSuccessResponse: # Login returns JWT + User
+      allOf:
+        - $ref: '#/components/schemas/SuccessDataArrayResponseBase'
+        - type: object
+          properties:
+            data: { items: { $ref: '#/components/schemas/LoginResult' }, maxItems: 1 } # LoginResult参照に変更
+
+  responses: # Common Error Responses
     BadRequest:
       description: リクエスト不正 (バリデーションエラーなど)
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' }, example: { status: 400, message: '入力形式が正しくありません。', code: 'INVALID_INPUT' } } }
     Unauthorized:
-      description: 認証エラー
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+      description: 認証エラー (トークン無効/無し/権限不足など)
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' }, example: { status: 401, message: '認証トークンが必要です、または無効です。', code: 'UNAUTHORIZED' } } }
     NotFound:
       description: リソースが見つからない
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' }, example: { status: 404, message: '要求されたリソースが見つかりません。', code: 'NOT_FOUND' } } }
     InternalServerError:
       description: サーバー内部エラー
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' }, example: { status: 500, message: 'サーバー内部でエラーが発生しました。', code: 'INTERNAL_SERVER_ERROR' } } }
 
-  securitySchemes: # 認証方式の定義 (例: Cookie認証)
-    cookieAuth: # 任意の名前
-      type: apiKey
-      in: cookie
-      name: session_id # 実際のCookie名に合わせる
+  securitySchemes:
+    bearerAuth: # JWT Bearer Authentication
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |-
+        ログインAPI(/api/auth/login)またはOIDCプロバイダー等から取得したJWTを
+        `Authorization: Bearer <token>` の形式でHTTPリクエストヘッダーに付与します。
