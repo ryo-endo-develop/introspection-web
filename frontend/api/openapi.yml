@@ -9,6 +9,8 @@ info:
     成功レスポンスボディにはリソースオブジェクトまたは配列を直接含める。
 
 servers:
+  - url: /
+    description: Relative path for client generation
   - url: http://localhost:5137
     description: Local development server (MSW or Proxy)
 

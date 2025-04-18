@@ -103,3 +103,9 @@ export const divider = style({
   backgroundColor: tokens.colors.border,
   margin: `${tokens.space.xl} 0`
 })
+
+export const errorMessage = style({
+  color: tokens.colors.error,
+  fontSize: tokens.fontSizes.xs,
+  marginTop: tokens.space.xs
+})

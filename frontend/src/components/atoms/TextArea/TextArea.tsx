@@ -20,6 +20,7 @@ interface TextAreaProps {
   required?: boolean
   className?: string
   error?: string
+  disabled?: boolean
 }
 
 export const TextArea: React.FC<TextAreaProps> = ({
@@ -32,7 +33,8 @@ export const TextArea: React.FC<TextAreaProps> = ({
   rows = 4,
   required = false,
   className = '',
-  error
+  error,
+  disabled
 }) => {
   return (
     <div className={`${container} ${className}`}>
@@ -54,6 +56,7 @@ export const TextArea: React.FC<TextAreaProps> = ({
         rows={rows}
         required={required}
         className={textareaStyle}
+        disabled={disabled}
         style={error ? { borderColor: tokens.colors.error } : {}}
       />
 

@@ -40,6 +40,7 @@ export const checkUserAuthStatus = createAsyncThunk<UserData>(
       if ('status' in error && error.status === 401) {
         errorMessage = 'Unauthorized: No active session found.'
       } else if (error.message) {
+        console.error('Error caught in checkUserAuthStatus:', err)
         errorMessage = error.message
       }
       // その他のエラー (ネットワークエラー、サーバーエラーなど)

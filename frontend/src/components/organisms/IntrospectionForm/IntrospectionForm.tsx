@@ -1,17 +1,20 @@
 import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
+import { IntrospectionCreateInput } from '../../../generated/api'
 import {
-  ZodIntrospectionData,
+  CreateIntrospectionSchema,
   ZodStatusRating
 } from '../../../schemas/validationSchemas'
-import { addIntrospection } from '../../../store/slices/introspectionsSlice'
+import { AppDispatch, RootState } from '../../../store'
+import { addIntrospectionThunk } from '../../../store/slices/introspectionsSlice'
 import { Button } from '../../atoms/Button/Button'
 import { Card, CardBody, CardHeader } from '../../atoms/Card/Card'
 import { TextArea } from '../../atoms/TextArea/TextArea'
 import {
   buttonContainer,
   divider,
+  errorMessage,
   formContainer,
   ratingButton,
   ratingButtonsContainer,
@@ -57,18 +60,33 @@ interface IntrospectionFormProps {
   className?: string
 }
 
+type FormErrors = Partial<
+  Record<
+    keyof IntrospectionCreateInput | 'status.mental' | 'status.physical',
+    string
+  >
+>
+
 export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
   onClose,
   className = ''
 }) => {
   const [formData, setFormData] = useState(initialFormState)
-  const dispatch = useDispatch()
+  const [errors, setErrors] = useState<FormErrors>({})
+  const dispatch = useDispatch<AppDispatch>()
+  const isLoading = useSelector(
+    (state: RootState) => state.introspections.loading.add
+  )
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
+    // 入力時にエラーをクリア (任意)
+    if (errors[name as keyof FormErrors]) {
+      setErrors({ ...errors, [name]: undefined })
+    }
   }
 
   const handleRatingChange = (
@@ -79,25 +97,53 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
       ...formData,
       status: { ...formData.status, [type]: value }
     })
+    // エラーをクリア (任意)
+    const errorKey = `status.${type}` as keyof FormErrors
+    if (errors[errorKey]) {
+      setErrors({ ...errors, [errorKey]: undefined })
+    }
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    const currentDate = new Date().toISOString().split('T')[0]
+    // ★ IIAFE と void 演算子を使う
+    void (async () => {
+      setErrors({}) // エラーをクリア
 
-    const newIntrospection: ZodIntrospectionData = {
-      id: `entry-${Date.now()}`,
-      date: currentDate,
-      title: formData.title || `${currentDate}の振り返り`,
-      activities: formData.activities,
-      improvements: formData.improvements,
-      nextSteps: formData.nextSteps,
-      status: formData.status
-    }
+      const currentDate = new Date().toISOString().split('T')[0]
+      const introspectionInput: IntrospectionCreateInput = {
+        date: currentDate,
+        title: formData.title.trim() || `${currentDate}の振り返り`,
+        activities: formData.activities.trim(),
+        improvements: formData.improvements.trim(),
+        nextSteps: formData.nextSteps.trim(),
+        status: formData.status
+      }
 
-    dispatch(addIntrospection(newIntrospection))
-    onClose()
+      // Zod バリデーション
+      const validationResult =
+        CreateIntrospectionSchema.safeParse(introspectionInput)
+      if (!validationResult.success) {
+        const formattedErrors: FormErrors = {}
+        validationResult.error.errors.forEach((err) => {
+          const key = err.path.join('.') as keyof FormErrors
+          formattedErrors[key] = err.message
+        })
+        setErrors(formattedErrors)
+        console.error('Validation Errors:', formattedErrors)
+        return // 送信中断
+      }
+
+      // Thunk ディスパッチ (await は IIAFE 内で使用)
+      try {
+        await dispatch(addIntrospectionThunk(validationResult.data)).unwrap()
+        onClose() // 成功したら閉じる
+      } catch (error) {
+        console.error('Failed to add introspection:', error)
+        // エラー通知処理 (例: トースト表示など)
+      }
+    })() // ★ IIAFE を即時実行
   }
 
   const renderRatingButtons = (
@@ -132,6 +178,8 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
             onChange={handleInputChange}
             placeholder="今日の振り返りのタイトルを入力してください"
             rows={1}
+            error={errors.title}
+            disabled={isLoading}
           />
         </CardBody>
       </Card>
@@ -148,6 +196,9 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
             <div className={ratingButtonsContainer}>
               {renderRatingButtons('mental', formData.status.mental)}
             </div>
+            {errors['status.mental'] && (
+              <div className={errorMessage}>{errors['status.mental']}</div>
+            )}
           </CardBody>
         </Card>
 
@@ -163,6 +214,9 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
               {renderRatingButtons('physical', formData.status.physical)}
             </div>
           </CardBody>
+          {errors['status.physical'] && (
+            <div className={errorMessage}>{errors['status.physical']}</div>
+          )}
         </Card>
       </div>
 
@@ -179,6 +233,8 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
             onChange={handleInputChange}
             placeholder="今日うまく行ったことを入力してください"
             rows={3}
+            error={errors.activities}
+            disabled={isLoading}
           />
 
           <div className={divider} />
@@ -191,6 +247,8 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
             onChange={handleInputChange}
             placeholder="改善したいことを入力してください"
             rows={3}
+            error={errors.activities}
+            disabled={isLoading}
           />
 
           <div className={divider} />
@@ -203,6 +261,8 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
             onChange={handleInputChange}
             placeholder="次に試したいことを入力してください"
             rows={3}
+            error={errors.activities}
+            disabled={isLoading}
           />
         </CardBody>
       </Card>
@@ -211,8 +271,8 @@ export const IntrospectionForm: React.FC<IntrospectionFormProps> = ({
         <Button variant="secondary" size="md" onClick={onClose}>
           キャンセル
         </Button>
-        <Button variant="primary" size="md" type="submit">
-          保存
+        <Button variant="primary" size="md" type="submit" disabled={isLoading}>
+          {isLoading ? '保存中...' : '保存'}
         </Button>
       </div>
     </form>
