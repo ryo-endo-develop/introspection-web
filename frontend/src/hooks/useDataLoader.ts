@@ -8,7 +8,7 @@ import {
   fetchIntrospections,
   fetchTrendData
 } from '../store/slices/introspectionsSlice'
-import { fetchUserData } from '../store/slices/userSlice'
+import { checkUserAuthStatus } from '../store/slices/userSlice'
 
 export const useDataLoader = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -43,7 +43,7 @@ export const useDataLoader = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        await dispatch(fetchUserData()).unwrap()
+        await dispatch(checkUserAuthStatus()).unwrap()
       } catch (err) {
         // Zodによるバリデーションエラーを含むエラー処理
         const errorMessage =
